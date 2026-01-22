@@ -1,1 +1,1 @@
-Capstone project built for CSC 530 — a semester-long system demonstrating design, teamwork, and application development in creating an app to simplify your pantry. From inventory to recipe management, we have strived to push our knowledge and improve our skills through this capstone project.
+
