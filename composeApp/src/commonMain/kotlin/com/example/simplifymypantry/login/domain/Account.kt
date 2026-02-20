@@ -1,4 +1,4 @@
-package com.example.simplifymypantry.Login.Domain
+package com.example.simplifymypantry.login.domain
 
 data class Account(
     val username: String,

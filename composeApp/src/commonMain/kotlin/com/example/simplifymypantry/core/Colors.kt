@@ -1,6 +1,7 @@
-package com.example.simplifymypantry.Core
+package com.example.simplifymypantry.core
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.lightColorScheme
 
 
 //delete the unused colors before pushing to production
@@ -34,3 +35,11 @@ val mahogany = Color(0xff9c202a)
 val darkBlue = Color(0xff202a9c)
 val lightGreen = Color(0xff41f131)
 val veryDarkGreen = Color(0xff13470f)
+
+val LightColors = lightColorScheme(
+    primary = darkGreen,
+    onPrimary = white,
+    secondary = darkGreen20b,
+    onSecondary = white,
+    tertiary = purple
+)

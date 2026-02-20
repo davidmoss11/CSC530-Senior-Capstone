@@ -2,7 +2,7 @@ package com.example.simplifymypantry
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.example.simplifymypantry.App.App
+import com.example.simplifymypantry.app.App
 
 fun main() = application {
     Window(
