@@ -40,6 +40,7 @@ val LightColors = lightColorScheme(
     primary = darkGreen,
     onPrimary = white,
     secondary = darkGreen20b,
-    onSecondary = white,
-    tertiary = purple
+    onSecondary = black,
+    tertiary = purple,
+    onTertiary = tealBlue
 )

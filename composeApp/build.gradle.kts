@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 
@@ -47,6 +48,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.navigation.compose)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
