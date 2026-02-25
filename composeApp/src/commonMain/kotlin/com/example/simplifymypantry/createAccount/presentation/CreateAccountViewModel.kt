@@ -12,5 +12,15 @@ class CreateAccountViewModel : ViewModel() {
     var email by mutableStateOf("")
     var password by mutableStateOf("")
     var confirmPassword by mutableStateOf("")
+    var showDialog by mutableStateOf(false)
+    var dialogMessage by mutableStateOf("")
+
+    fun createAccountClicked(){
+        if(username == "" || email == "" || password == "" || confirmPassword == "")
+            showDialog = true
+            dialogMessage = "Please fill in all fields"
+
+
+    }
 
 }
