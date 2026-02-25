@@ -9,9 +9,14 @@ class LoginViewModel : ViewModel() {
 
     var username by mutableStateOf("")
     var password by mutableStateOf("")
+    var showDialog by mutableStateOf(false)
+    var dialogMessage by mutableStateOf("")
 
     fun loginButtonClicked() {
-
+        if(username == "" || password == ""){
+            showDialog = true
+            dialogMessage = "Missing Username or Password"
+        }
     }
 
     fun createAccountButtonClicked() {

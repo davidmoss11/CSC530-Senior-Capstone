@@ -20,7 +20,7 @@ val customTypography = Typography(
     ),
     titleLarge = TextStyle(
         color = Color.White,
-        fontSize = 25.sp
+        fontSize = 35.sp
     ),
     titleMedium = TextStyle(
         color = Color.White,
