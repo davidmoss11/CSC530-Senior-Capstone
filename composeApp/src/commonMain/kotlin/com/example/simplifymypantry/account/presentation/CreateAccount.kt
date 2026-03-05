@@ -1,4 +1,4 @@
-package com.example.simplifymypantry.createAccount.presentation
+package com.example.simplifymypantry.account.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
@@ -43,7 +43,7 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit){
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.primary)
+                .background(color = MaterialTheme.colorScheme.background)
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f),
             verticalArrangement = Arrangement.spacedBy(

@@ -1,8 +1,7 @@
-package com.example.simplifymypantry.createAccount.presentation
+package com.example.simplifymypantry.account.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 
