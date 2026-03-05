@@ -1,4 +1,4 @@
-package com.example.simplifymypantry.login.presentation
+package com.example.simplifymypantry.account.presentation
 
 
 import androidx.compose.runtime.Composable
@@ -52,7 +52,7 @@ fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip:
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.background)
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f),
             verticalArrangement = Arrangement.spacedBy(
@@ -166,8 +166,6 @@ fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip:
                     textAlign = TextAlign.Center,
                 )
             }
-
-
         }
 
         IconButton(

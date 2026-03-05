@@ -16,4 +16,16 @@ sealed interface Route {
 
     @Serializable
     data object CreateAccount: Route
+
+    @Serializable
+    data object Pantry: Route
+    //both of these are classes because they must take an object
+    @Serializable
+    data object Recipes: Route
+
+    @Serializable
+    data object Scanner: Route
+
+    @Serializable
+    data object ViewAccount: Route
 }

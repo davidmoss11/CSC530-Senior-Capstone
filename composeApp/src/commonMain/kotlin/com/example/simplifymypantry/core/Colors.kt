@@ -37,10 +37,12 @@ val lightGreen = Color(0xff41f131)
 val veryDarkGreen = Color(0xff13470f)
 
 val LightColors = lightColorScheme(
-    primary = darkGreen,
+    primary = darkGreen20w,
     onPrimary = white,
     secondary = darkGreen20b,
     onSecondary = black,
     tertiary = purple,
-    onTertiary = tealBlue
+    onTertiary = tealBlue,
+    background = darkGreen,
+    onPrimaryContainer = darkGreen30w
 )
