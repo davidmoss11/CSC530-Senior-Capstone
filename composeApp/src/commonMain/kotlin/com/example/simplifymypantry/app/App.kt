@@ -52,7 +52,8 @@ fun App() {
                     val createAccountViewModel = viewModel<CreateAccountViewModel>()
                      CreateAccount(
                          viewModel = createAccountViewModel,
-                         onSignIn = { navController.navigate(Route.LoginPage) }
+                         onSignIn = { navController.navigate(Route.LoginPage) },
+                         onSkip = { navController.navigate(Route.HomeScreen) }
                      )
                  }
 
@@ -62,6 +63,7 @@ fun App() {
                      val homeScreenViewModel = viewModel<HomeScreenViewModel>()
                              HomeScreen(
                                  viewModel = homeScreenViewModel,
+                                 navController = navController,
                                  pantryClick = { navController.navigate(Route.Pantry) },
                                  recipeClick = { navController.navigate(Route.Recipes) },
                                  scanClick = { navController.navigate(Route.Scanner) },
@@ -73,7 +75,8 @@ fun App() {
                  ){
                      val viewAccountViewModel = viewModel<ViewAccountViewModel>()
                      ViewAccount(
-                         viewModel = viewAccountViewModel
+                         viewModel = viewAccountViewModel,
+                         navController = navController
                      )
                  }
              }
