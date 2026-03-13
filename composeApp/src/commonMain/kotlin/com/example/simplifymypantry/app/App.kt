@@ -19,6 +19,8 @@ import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
+import com.example.simplifymypantry.pantry.presentation.PantryScreen
+import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreen
 import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreenViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
@@ -36,10 +38,14 @@ fun App() {
     ){
         val recipeScreenViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
+
+         val pantryViewModel = viewModel<PantryViewModel>()
+        val recipeViewModel = viewModel<RecipeViewModel>()
+
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
-        ){
+        ) {
              navigation<Route.AppGraph>(
                  startDestination = Route.LoginPage
              ){
@@ -121,6 +127,14 @@ fun App() {
                          viewModel = recipeViewModel,
                          navController = navController
                      )
+                 }
+
+                 composable<Route.Pantry> {
+                     PantryScreen(viewModel = pantryViewModel)
+                 }
+
+                 composable<Route.Recipes> {
+                     RecipeScreen(viewModel = recipeViewModel)
                  }
              }
         }
