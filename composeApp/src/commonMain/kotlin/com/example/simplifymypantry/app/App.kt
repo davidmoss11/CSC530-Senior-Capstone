@@ -39,7 +39,7 @@ fun App() {
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
-        ){
+        ) {
              navigation<Route.AppGraph>(
                  startDestination = Route.LoginPage
              ){
