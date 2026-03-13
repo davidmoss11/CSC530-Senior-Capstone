@@ -18,6 +18,10 @@ import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
+import com.example.simplifymypantry.pantry.presentation.PantryScreen
+import com.example.simplifymypantry.pantry.presentation.PantryViewModel
+import com.example.simplifymypantry.recipe.presentation.RecipeScreen
+import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
 
 
 @Composable
@@ -75,6 +79,16 @@ fun App() {
                      ViewAccount(
                          viewModel = viewAccountViewModel
                      )
+                 }
+
+                 composable<Route.Pantry> {
+                     val pantryViewModel = viewModel<PantryViewModel>()
+                     PantryScreen(viewModel = pantryViewModel)
+                 }
+
+                 composable<Route.Recipes> {
+                     val recipeViewModel = viewModel<RecipeViewModel>()
+                     RecipeScreen(viewModel = recipeViewModel)
                  }
              }
         }
