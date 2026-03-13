@@ -41,6 +41,7 @@ import simplifymypantry.composeapp.generated.resources.visibility_24px
 import simplifymypantry.composeapp.generated.resources.visibility_off_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
+import simplifymypantry.composeapp.generated.resources.close_24px
 
 @Composable
 @Preview
@@ -186,9 +187,9 @@ fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip:
                 disabledContainerColor = MaterialTheme.colorScheme.onPrimary
             ),
         ) {
-            Text(
-                text = "X",
-                style = MaterialTheme.typography.titleMedium
+            Icon(
+                painter = painterResource(Res.drawable.close_24px),
+                contentDescription = "Close"
             )
         }
     }

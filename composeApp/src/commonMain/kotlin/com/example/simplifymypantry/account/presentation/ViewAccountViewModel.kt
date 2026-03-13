@@ -10,4 +10,5 @@ class ViewAccountViewModel : ViewModel() {
     var userName by mutableStateOf("")
     var email by mutableStateOf("")
     var name by mutableStateOf("")
+    var isLoggedIn by mutableStateOf(true)
 }

@@ -17,11 +17,16 @@ import com.example.simplifymypantry.account.presentation.LoginViewModel
 import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.toRoute
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
+import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreen
+import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreenViewModel
+import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
+import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
-import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
+import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
 
 
 @Composable
@@ -31,6 +36,7 @@ fun App() {
         typography = customTypography,
         shapes = customShapes
     ){
+        val recipeScreenViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
 
          val pantryViewModel = viewModel<PantryViewModel>()
@@ -60,7 +66,8 @@ fun App() {
                     val createAccountViewModel = viewModel<CreateAccountViewModel>()
                      CreateAccount(
                          viewModel = createAccountViewModel,
-                         onSignIn = { navController.navigate(Route.LoginPage) }
+                         onSignIn = { navController.navigate(Route.LoginPage) },
+                         onSkip = { navController.navigate(Route.HomeScreen) }
                      )
                  }
 
@@ -70,6 +77,7 @@ fun App() {
                      val homeScreenViewModel = viewModel<HomeScreenViewModel>()
                              HomeScreen(
                                  viewModel = homeScreenViewModel,
+                                 navController = navController,
                                  pantryClick = { navController.navigate(Route.Pantry) },
                                  recipeClick = { navController.navigate(Route.Recipes) },
                                  scanClick = { navController.navigate(Route.Scanner) },
@@ -81,7 +89,43 @@ fun App() {
                  ){
                      val viewAccountViewModel = viewModel<ViewAccountViewModel>()
                      ViewAccount(
-                         viewModel = viewAccountViewModel
+                         viewModel = viewAccountViewModel,
+                         navController = navController
+                     )
+                 }
+
+                 composable<Route.CreateRecipe>(
+
+                 ){
+                     val createRecipeViewModel = viewModel<CreateRecipeScreenViewModel>()
+                     CreateRecipeScreen(
+                         viewModel = createRecipeViewModel,
+                         navController = navController
+                     )
+                 }
+
+                 composable<Route.Recipes>(
+
+                 ){
+                     val recipeScreenViewModel = viewModel<RecipeScreenViewModel>()
+                     RecipeScreen(
+                         onCreateRecipeClick = { navController.navigate(Route.CreateRecipe) },
+                         viewModel = recipeScreenViewModel,
+                         navController = navController
+                     )
+                 }
+
+                 composable<Route.RecipeDetails>(
+
+                 ){
+                     backStackEntry -> val route : Route.RecipeDetails = backStackEntry.toRoute()
+                     val recipeViewModel = viewModel {
+                         RecipeDetailViewModel(route.recipeId, recipeScreenViewModel)
+                     }
+
+                     RecipeDetailScreen(
+                         viewModel = recipeViewModel,
+                         navController = navController
                      )
                  }
 
