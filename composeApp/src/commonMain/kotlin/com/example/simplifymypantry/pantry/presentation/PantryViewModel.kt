@@ -14,7 +14,6 @@ class PantryViewModel : ViewModel() {
     private val _filterQuery = MutableStateFlow("")
     val filterQuery: StateFlow<String> = _filterQuery.asStateFlow()
 
-    // Filtered items based on search/filter query
     val filteredItems = combine(_items, _filterQuery) { items, query ->
         if (query.isBlank()) {
             items

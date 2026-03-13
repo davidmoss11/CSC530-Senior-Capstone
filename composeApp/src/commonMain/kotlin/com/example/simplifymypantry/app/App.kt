@@ -32,6 +32,10 @@ fun App() {
         shapes = customShapes
     ){
         val navController = rememberNavController()
+
+         val pantryViewModel = viewModel<PantryViewModel>()
+        val recipeViewModel = viewModel<RecipeViewModel>()
+
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
@@ -82,12 +86,10 @@ fun App() {
                  }
 
                  composable<Route.Pantry> {
-                     val pantryViewModel = viewModel<PantryViewModel>()
                      PantryScreen(viewModel = pantryViewModel)
                  }
 
                  composable<Route.Recipes> {
-                     val recipeViewModel = viewModel<RecipeViewModel>()
                      RecipeScreen(viewModel = recipeViewModel)
                  }
              }
