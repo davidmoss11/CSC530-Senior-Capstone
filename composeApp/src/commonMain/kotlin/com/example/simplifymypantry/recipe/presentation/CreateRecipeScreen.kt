@@ -1,23 +1,18 @@
 package com.example.simplifymypantry.recipe.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
@@ -37,7 +32,6 @@ import com.example.simplifymypantry.core.HamburgerMenu
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: NavController) {
-    // Show alert dialog if the viewmodel says so
     if (viewModel.showDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.showDialog = false },
@@ -92,7 +86,6 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                 verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Recipe Name Field
                 Text(
                     text = "Recipe Name",
                     style = MaterialTheme.typography.titleMedium,
@@ -106,7 +99,6 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     modifier = Modifier.fillMaxWidth(0.8f)
                 )
 
-                // Public/Private Switch
                 Row(
                     modifier = Modifier.fillMaxWidth(0.8f),
                     verticalAlignment = Alignment.CenterVertically,
@@ -123,7 +115,6 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     )
                 }
 
-                // Ingredients Field (Multi-line)
                 Text(
                     text = "Ingredients",
                     style = MaterialTheme.typography.titleMedium,
@@ -138,7 +129,6 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     minLines = 3
                 )
 
-                // Instructions Field (Multi-line)
                 Text(
                     text = "Instructions" + if (viewModel.isPublic) " (Mandatory)" else " (Optional)",
                     style = MaterialTheme.typography.titleMedium,
@@ -153,7 +143,6 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     minLines = 4
                 )
 
-                // Save Button
                 Button(
                     modifier = Modifier
                         .width(150.dp)
