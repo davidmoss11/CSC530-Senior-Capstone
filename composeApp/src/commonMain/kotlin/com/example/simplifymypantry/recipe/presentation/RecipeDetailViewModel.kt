@@ -18,7 +18,6 @@ class RecipeDetailViewModel(val recipeId: String, private val mainViewModel: Rec
     }
 
     fun updateRecipe() {
-        // Logic to update recipe in the main list
         val updatedRecipe = recipe?.copy(
             name = name,
             ingredients = ingredients.split("\n").map { it.trim() },
@@ -26,7 +25,7 @@ class RecipeDetailViewModel(val recipeId: String, private val mainViewModel: Rec
             isSaved = isSaved,
             comments = comments.toList()
         )
-        updatedRecipe?.let { mainViewModel.addRecipe(it) } // this should replace the old one in a real app, but for now we'll just add it
+        updatedRecipe?.let { mainViewModel.addRecipe(it) }
     }
 
     fun toggleSave() {
@@ -34,7 +33,6 @@ class RecipeDetailViewModel(val recipeId: String, private val mainViewModel: Rec
     }
 
     fun shareRecipe() {
-        // Mock share logic
         println("Sharing recipe: $name")
     }
 

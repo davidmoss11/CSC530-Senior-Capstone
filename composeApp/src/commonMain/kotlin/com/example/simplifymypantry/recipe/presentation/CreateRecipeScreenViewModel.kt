@@ -23,14 +23,12 @@ class CreateRecipeScreenViewModel(private val mainViewModel: RecipeScreenViewMod
             return
         }
 
-        // If public, instructions are mandatory
         if (isPublic && instructions.isBlank()) {
             dialogMessage = "Instructions are required for public recipes."
             showDialog = true
             return
         }
 
-        // Create the recipe object
         val newRecipe = Recipe(
             id = (mainViewModel.recipes.size + 1).toString(),
             name = recipeName,
@@ -39,7 +37,6 @@ class CreateRecipeScreenViewModel(private val mainViewModel: RecipeScreenViewMod
             isPublic = isPublic
         )
 
-        // Add it to the shared list
         mainViewModel.addRecipe(newRecipe)
 
         dialogMessage = "Recipe '$recipeName' saved successfully!"

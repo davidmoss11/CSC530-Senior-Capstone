@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Recipe(
     val id: String = "",
-    val name: String = "", // changed from title to name to match the UI
+    val name: String = "",
     val ingredients: List<String> = emptyList(),
     val instructions: String = "",
     val category: String = "",
@@ -19,5 +19,5 @@ data class Recipe(
 data class Comment(
     val user: String,
     val text: String,
-    val rating: Int // 1-5 stars
+    val rating: Int
 )
