@@ -1,23 +1,12 @@
 package com.example.simplifymypantry.recipe.presentation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.error
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.simplifymypantry.core.HamburgerMenu
@@ -25,89 +14,93 @@ import com.example.simplifymypantry.core.HamburgerMenu
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailScreen(viewModel: RecipeDetailViewModel, navController: NavController) {
+    var commentText by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "Edit Recipe",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                },
-                navigationIcon = { HamburgerMenu(navController) }
+                title = { Text("Recipe Details") },
+                navigationIcon = { HamburgerMenu(navController) },
+                actions = {
+                    // Share Button
+                    IconButton(onClick = { viewModel.shareRecipe() }) {
+                        Text("Share", style = MaterialTheme.typography.labelSmall)
+                    }
+                    // Save/Favorite Button
+                    IconButton(onClick = { viewModel.toggleSave() }) {
+                        Text(if (viewModel.isSaved) "❤️" else "🤍")
+                    }
+                }
             )
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Text(
-                text = "Recipe Name",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondary
-            )
             TextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.name = it },
+                label = { Text("Recipe Name") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = "Ingredients",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondary
-            )
+            Spacer(modifier = Modifier.height(10.dp))
+
             TextField(
                 value = viewModel.ingredients,
                 onValueChange = { viewModel.ingredients = it },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(0.8f).height(120.dp),
-                minLines = 3
+                label = { Text("Ingredients") },
+                modifier = Modifier.fillMaxWidth().height(100.dp)
             )
 
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = "Instructions",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondary
-            )
             TextField(
                 value = viewModel.instructions,
                 onValueChange = { viewModel.instructions = it },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(0.8f).height(150.dp),
-                minLines = 4
+                label = { Text("Instructions") },
+                modifier = Modifier.fillMaxWidth().height(120.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            //delete button
-            Button(
-                onClick = {
-                    viewModel.deleteRecipe { navController.popBackStack() }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                ),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text("Delete Recipe")
+            // Comments Section
+            Text("Comments", style = MaterialTheme.typography.titleMedium)
+            
+            Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                viewModel.comments.forEach { comment ->
+                    Text("${comment.user}: ${comment.text}", style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
+            // Add Comment Field
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextField(
+                    value = commentText,
+                    onValueChange = { commentText = it },
+                    placeholder = { Text("Add a comment...") },
+                    modifier = Modifier.weight(1f)
+                )
+                Button(onClick = { 
+                    viewModel.addComment(commentText)
+                    commentText = "" 
+                }) {
+                    Text("Post")
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            //save button
             Button(
                 onClick = {
                     viewModel.updateRecipe()
                     navController.popBackStack()
                 },
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Changes")
             }
