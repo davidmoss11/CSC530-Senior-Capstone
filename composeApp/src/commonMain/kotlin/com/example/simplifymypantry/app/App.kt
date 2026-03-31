@@ -29,6 +29,7 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
+import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
 
 
 @Composable
@@ -125,7 +126,6 @@ fun App() {
                          navController = navController
                      )
                  }
-
 
                  composable<Route.Pantry> {
                      PantryScreen(viewModel = pantryViewModel)

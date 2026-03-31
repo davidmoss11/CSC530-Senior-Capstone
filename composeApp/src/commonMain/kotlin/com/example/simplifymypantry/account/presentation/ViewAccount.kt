@@ -36,7 +36,12 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Account") },
+                title = { Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("My Account")
+                }},
                 navigationIcon = { HamburgerMenu(navController) },
                 colors = TopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
