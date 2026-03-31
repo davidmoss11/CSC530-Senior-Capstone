@@ -18,6 +18,8 @@ import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
+import com.example.simplifymypantry.account.presentation.HouseholdScreen
+import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
@@ -115,6 +117,15 @@ fun App() {
                          navController = navController
                      )
                  }
+
+                 composable<Route.Household>{
+                     val householdViewModel = viewModel<HouseholdViewModel>()
+                     HouseholdScreen(
+                         viewModel = householdViewModel,
+                         navController = navController
+                     )
+                 }
+
 
                  composable<Route.Pantry> {
                      PantryScreen(viewModel = pantryViewModel)
