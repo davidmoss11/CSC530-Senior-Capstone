@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.simplifymypantry.core.HamburgerMenu
 import com.example.simplifymypantry.app.Route
+import com.example.simplifymypantry.recipe.domain.Recipe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +50,8 @@ fun RecipeScreen(
             ) {
                 Text(
                     text = "Create New Recipe",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
         }
@@ -96,14 +99,34 @@ fun RecipeItem(recipe: Recipe, onRecipeClick: (String) -> Unit) {
             .padding(16.dp)
     ) {
         Column {
-            Text(
-                text = recipe.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = recipe.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // Public/Private badge
+                Surface(
+                    color = if (recipe.isPublic) MaterialTheme.colorScheme.primary else Color.Gray,
+                    shape = MaterialTheme.shapes.extraSmall
+                ) {
+                    Text(
+                        text = if (recipe.isPublic) "PUBLIC" else "PRIVATE",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Ingredients: ${recipe.ingredients.take(50)}...",
+                text = "Ingredients: ${recipe.ingredients.take(5).joinToString(", ")}...",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSecondary
             )

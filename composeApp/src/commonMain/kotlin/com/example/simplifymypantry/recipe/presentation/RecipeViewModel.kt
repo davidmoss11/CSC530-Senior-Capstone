@@ -10,10 +10,10 @@ class RecipeViewModel : ViewModel() {
     private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
     val recipes: StateFlow<List<Recipe>> = _recipes.asStateFlow()
 
-    fun addRecipe(title: String, ingredients: String, instructions: String, category: String) {
+    fun addRecipe(name: String, ingredients: String, instructions: String, category: String) {
         val newRecipe = Recipe(
             id = (recipes.value.size + 1).toString(),
-            title = title,
+            name = name,
             ingredients = ingredients.split(",").map { it.trim() },
             instructions = instructions,
             category = category
