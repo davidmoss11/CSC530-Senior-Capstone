@@ -18,6 +18,8 @@ import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
+import com.example.simplifymypantry.account.presentation.HouseholdScreen
+import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
@@ -37,11 +39,10 @@ fun App() {
         typography = customTypography,
         shapes = customShapes
     ){
-        val recipeScreenViewModel = viewModel<RecipeScreenViewModel>()
+        // We create this here so it's shared between the List and Create screens
+        val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
-
-         val pantryViewModel = viewModel<PantryViewModel>()
-        val recipeViewModel = viewModel<RecipeViewModel>()
+        val pantryViewModel = viewModel<PantryViewModel>()
 
         NavHost(
             navController = navController,
@@ -50,9 +51,7 @@ fun App() {
              navigation<Route.AppGraph>(
                  startDestination = Route.LoginPage
              ){
-                 composable<Route.LoginPage>(
-
-                 ){
+                 composable<Route.LoginPage>{
                      val loginViewModel = viewModel<LoginViewModel>()
                      LoginScreen(
                          viewModel = loginViewModel,
@@ -61,9 +60,7 @@ fun App() {
                      )
                  }
 
-                 composable<Route.CreateAccount>(
-
-                 ){
+                 composable<Route.CreateAccount>{
                     val createAccountViewModel = viewModel<CreateAccountViewModel>()
                      CreateAccount(
                          viewModel = createAccountViewModel,
@@ -72,9 +69,7 @@ fun App() {
                      )
                  }
 
-                 composable<Route.HomeScreen>(
-
-                 ){
+                 composable<Route.HomeScreen>{
                      val homeScreenViewModel = viewModel<HomeScreenViewModel>()
                              HomeScreen(
                                  viewModel = homeScreenViewModel,
@@ -85,9 +80,7 @@ fun App() {
                              )
                  }
 
-                 composable<Route.ViewAccount>(
-
-                 ){
+                 composable<Route.ViewAccount>{
                      val viewAccountViewModel = viewModel<ViewAccountViewModel>()
                      ViewAccount(
                          viewModel = viewAccountViewModel,
@@ -95,33 +88,29 @@ fun App() {
                      )
                  }
 
-                 composable<Route.CreateRecipe>(
-
-                 ){
-                     val createRecipeViewModel = viewModel<CreateRecipeScreenViewModel>()
+                 composable<Route.CreateRecipe>{
+                     // Pass the shared viewModel so we can add the recipe to the list
+                     val createRecipeViewModel = viewModel {
+                         CreateRecipeScreenViewModel(sharedRecipeViewModel)
+                     }
                      CreateRecipeScreen(
                          viewModel = createRecipeViewModel,
                          navController = navController
                      )
                  }
 
-                 composable<Route.Recipes>(
-
-                 ){
-                     val recipeScreenViewModel = viewModel<RecipeScreenViewModel>()
+                 composable<Route.Recipes>{
                      RecipeScreen(
                          onCreateRecipeClick = { navController.navigate(Route.CreateRecipe) },
-                         viewModel = recipeScreenViewModel,
+                         viewModel = sharedRecipeViewModel,
                          navController = navController
                      )
                  }
 
-                 composable<Route.RecipeDetails>(
-
-                 ){
-                     backStackEntry -> val route : Route.RecipeDetails = backStackEntry.toRoute()
+                 composable<Route.RecipeDetails>{ backStackEntry -> 
+                     val route : Route.RecipeDetails = backStackEntry.toRoute()
                      val recipeViewModel = viewModel {
-                         RecipeDetailViewModel(route.recipeId, recipeScreenViewModel)
+                         RecipeDetailViewModel(route.recipeId, sharedRecipeViewModel)
                      }
 
                      RecipeDetailScreen(
@@ -130,16 +119,16 @@ fun App() {
                      )
                  }
 
-                 composable<Route.Pantry> {
-                     PantryScreen(viewModel = pantryViewModel)
+                 composable<Route.Household>{
+                     val householdViewModel = viewModel<HouseholdViewModel>()
+                     HouseholdScreen(
+                         viewModel = householdViewModel,
+                         navController = navController
+                     )
                  }
 
-                 composable<Route.Recipes> {
-                     RecipeScreen(
-                         viewModel = recipeScreenViewModel,
-                         navController = navController,
-                         onCreateRecipeClick = {} , //unsure, needs to be filled in later
-                         )
+                 composable<Route.Pantry> {
+                     PantryScreen(viewModel = pantryViewModel)
                  }
              }
         }

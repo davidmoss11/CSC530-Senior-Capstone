@@ -10,6 +10,8 @@ import com.example.simplifymypantry.config.*
 import com.example.simplifymypantry.util.SimpleJWT
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.contentnegotiation.*
+import com.example.simplifymypantry.SERVER_PORT
+import com.example.simplifymypantry.Greeting
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
