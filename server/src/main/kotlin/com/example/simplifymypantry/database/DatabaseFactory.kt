@@ -21,10 +21,10 @@ interface IDatabaseFactory{
 }
 
 
-class DatabaseFactory(private val environment: ApplicationEnvironment) {
+class DatabaseFactory(private val environment: ApplicationEnvironment): IDatabaseFactory {
 
     //connects to the database
-    fun init(){
+    override fun init(){
         Database.connect(hikari())
         transaction {
             SchemaUtils.create(Users)
@@ -45,13 +45,13 @@ class DatabaseFactory(private val environment: ApplicationEnvironment) {
         return HikariDataSource(config)
     }
 
-    fun drop(){
+    override fun drop(){
         transaction{
             SchemaUtils.drop(Users)
         }
     }
 
-    suspend fun <T> dbQuery(block: () -> T): T = withContext(Dispatchers.IO) {
+    override suspend fun <T> dbQuery(block: () -> T): T = withContext(Dispatchers.IO) {
         transaction { block() }
     }
 

@@ -7,8 +7,8 @@ plugins {
 group = "com.example.simplifymypantry"
 version = "1.0.0"
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-    
+    mainClass.set("com.example.simplifymypantry.ApplicationKt")
+
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
