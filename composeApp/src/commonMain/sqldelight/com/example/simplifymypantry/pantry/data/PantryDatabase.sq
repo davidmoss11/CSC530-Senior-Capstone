@@ -1,0 +1,24 @@
+CREATE TABLE pantryItemEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    quantity TEXT NOT NULL,
+    category TEXT NOT NULL,
+    expirationDate TEXT NOT NULL,
+    dietInfo TEXT NOT NULL,
+    notes TEXT NOT NULL
+);
+
+getAllItems:
+SELECT * FROM pantryItemEntity;
+
+insertItem:
+INSERT OR REPLACE INTO pantryItemEntity(name, quantity, category, expirationDate, dietInfo, notes)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateItem:
+UPDATE pantryItemEntity
+SET name = ?, quantity = ?, category = ?, expirationDate = ?, dietInfo = ?, notes = ?
+WHERE id = ?;
+
+deleteItem:
+DELETE FROM pantryItemEntity WHERE id = ?;

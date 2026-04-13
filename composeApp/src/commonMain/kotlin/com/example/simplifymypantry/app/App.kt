@@ -21,6 +21,7 @@ import androidx.navigation.toRoute
 import com.example.simplifymypantry.account.presentation.HouseholdScreen
 import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
+import com.example.simplifymypantry.pantry.data.DriverFactory
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreen
@@ -30,19 +31,23 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
+import com.example.simplifymypantry.pantry.data.createDatabase
 
 
 @Composable
-fun App() {
+fun App(driverFactory: DriverFactory) {
+    val database = remember { createDatabase(driverFactory) }
+    val queries = database.pantryDatabaseQueries
+
     MaterialTheme(
         colorScheme = LightColors,
         typography = customTypography,
         shapes = customShapes
     ){
         // We create this here so it's shared between the List and Create screens
+        val pantryViewModel = viewModel { PantryViewModel(queries) }
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
-        val pantryViewModel = viewModel<PantryViewModel>()
 
         NavHost(
             navController = navController,
@@ -128,7 +133,7 @@ fun App() {
                  }
 
                  composable<Route.Pantry> {
-                     PantryScreen(viewModel = pantryViewModel)
+                     PantryScreen(viewModel = pantryViewModel, navController = navController)
                  }
              }
         }

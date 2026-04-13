@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 
@@ -46,6 +47,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.sqldelight.android.driver)
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
@@ -63,6 +65,8 @@ kotlin {
             implementation(libs.ktor.clientCore)
             implementation(libs.ktor.clientJson)
             implementation(libs.ktor.clientSerial)
+            
+            implementation(libs.sqldelight.coroutines.extensions)
 
         }
         commonTest.dependencies {
@@ -71,7 +75,10 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.sqldelight.sqlite.driver)
         }
+        // Since iosArm64 and iosSimulatorArm64 are defined, we use their shared source set or specific ones
+        // Usually, there is an 'iosMain' created by convention if you define ios targets
     }
 }
 
@@ -99,6 +106,14 @@ kotlin {
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_11
             targetCompatibility = JavaVersion.VERSION_11
+        }
+    }
+
+    sqldelight {
+        databases {
+            create("PantryDatabase") {
+                packageName.set("com.example.simplifymypantry.pantry.data")
+            }
         }
     }
 
