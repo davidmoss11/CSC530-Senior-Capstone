@@ -33,7 +33,7 @@ fun App() {
     ){
         val navController = rememberNavController()
 
-         val pantryViewModel = viewModel<PantryViewModel>()
+        val pantryViewModel = viewModel<PantryViewModel>()
         val recipeViewModel = viewModel<RecipeViewModel>()
 
         NavHost(
@@ -90,7 +90,10 @@ fun App() {
                  }
 
                  composable<Route.Recipes> {
-                     RecipeScreen(viewModel = recipeViewModel)
+                     RecipeScreen(
+                         viewModel = recipeViewModel,
+                         pantryViewModel = pantryViewModel
+                     )
                  }
              }
         }
