@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.simplifymypantry.account.data.AccountDriver
 import com.example.simplifymypantry.app.App
 import com.example.simplifymypantry.pantry.data.DriverFactory
 
@@ -18,7 +19,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val driverFactory = remember { DriverFactory(applicationContext) }
-            App(driverFactory = driverFactory)
+            val accountDriver = remember { AccountDriver(applicationContext) }
+            App(driverFactory = driverFactory, accountDriver)
         }
     }
 }

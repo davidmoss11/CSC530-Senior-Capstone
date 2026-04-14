@@ -61,11 +61,15 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
+            //implementation(libs.datastore)
 
             implementation(libs.ktor.clientCore)
-            implementation(libs.ktor.clientJson)
-            implementation(libs.ktor.clientSerial)
-            
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.clientContentNegotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kermit.logging)
+            implementation(libs.settings)
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.sqldelight.coroutines.extensions)
 
         }
@@ -113,6 +117,11 @@ kotlin {
         databases {
             create("PantryDatabase") {
                 packageName.set("com.example.simplifymypantry.pantry.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/Pantry")
+            }
+            create("AccountDatabase") {
+                packageName.set("com.example.simplifymypantry.account.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/Account")
             }
         }
     }

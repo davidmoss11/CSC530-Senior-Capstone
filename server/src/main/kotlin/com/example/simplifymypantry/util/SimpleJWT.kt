@@ -13,7 +13,7 @@ class SimpleJWT(secret: String) {
     val verifier : JWTVerifier = JWT.require(algorithm).build()
 
     fun sign(id: EntityID<UUID>): String = JWT.create()
-        .withClaim("id", id.toString())
+        .withClaim("id", id.value.toString())
         .sign(algorithm)
 
 }

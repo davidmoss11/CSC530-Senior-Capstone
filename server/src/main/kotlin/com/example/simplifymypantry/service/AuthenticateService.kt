@@ -22,7 +22,7 @@ interface IAuthService{ //interface allows for future adding or swapping out dbs
 
     suspend fun editUser(userId: String, request: UpdateUser) : User
 
-    suspend fun deleteUser()
+    suspend fun deleteUser(userId: String)
 
     suspend fun getUserById(id: String) : User
 
@@ -33,6 +33,8 @@ interface IAuthService{ //interface allows for future adding or swapping out dbs
 class AuthService(private val databaseFactory: IDatabaseFactory): IAuthService { //current class to query our database
 
     override suspend fun createUser(request: RegisterUser): User {
+
+        println("Auth Service Create User activated")
 
         return databaseFactory.dbQuery{
 
@@ -54,7 +56,7 @@ class AuthService(private val databaseFactory: IDatabaseFactory): IAuthService {
 
         val userInDatabase = databaseFactory.dbQuery{
             User.find{
-                (Users.username eq request.user.username) or (Users.username eq request.user.email)
+                (Users.username eq request.user.username) or (Users.email eq request.user.email)
             }.firstOrNull()
         }
 
@@ -81,7 +83,11 @@ class AuthService(private val databaseFactory: IDatabaseFactory): IAuthService {
         }
     }
 
-    override suspend fun deleteUser(){
+    override suspend fun deleteUser(userId: String){
+        return databaseFactory.dbQuery {
+            val user = findUserById(userId)
+            user.delete()
+        }
         
     }
 

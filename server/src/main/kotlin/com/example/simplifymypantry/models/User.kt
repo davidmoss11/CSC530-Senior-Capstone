@@ -26,7 +26,7 @@ class User(id: EntityID<UUID>) : UUIDEntity(id){
 }
 
 data class RegisterUser(val user: User) {
-    data class User(val email: String, val username: String, val password: String)
+    data class User(val username: String, val email: String, val password: String)
 }
 
 data class LoginUser(val user: User) {
@@ -39,6 +39,10 @@ data class UpdateUser(val user: User) {
         val username: String? = null,
         val password: String? = null
     )
+}
+
+data class deleteUser(val user: User) {
+
 }
 
 data class UserResponse(

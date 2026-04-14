@@ -18,7 +18,10 @@ fun Routing.api(simpleJWT: SimpleJWT) {
             call.respond("Welcome to Simplify My Pantry's API")
         }
 
-        auth(authService, simpleJWT) //routes all user routes to auth, and passes in authService functions to call
+        apply {
+            auth(authService, simpleJWT)
+        }
+        //routes all user routes to auth, and passes in authService functions to call
     }
 
 }

@@ -7,7 +7,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import com.example.simplifymypantry.pantry.data.PantryDatabaseQueries
 import com.example.simplifymypantry.pantry.domain.PantryItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+//import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,7 +16,7 @@ class PantryViewModel(private val queries: PantryDatabaseQueries) : ViewModel() 
     // Observe the database as a Flow and map to your domain PantryItem
     val items: StateFlow<List<PantryItem>> = queries.getAllItems()
         .asFlow()
-        .mapToList(Dispatchers.IO)
+        .mapToList(Dispatchers.Default) //was Dispatchers.IO, but I kept getting an error, will revert if needed
         .map { entities ->
             entities.map { entity ->
                 PantryItem(

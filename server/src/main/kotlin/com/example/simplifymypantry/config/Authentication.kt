@@ -7,12 +7,18 @@ import io.ktor.server.auth.jwt.*
 
 fun AuthenticationConfig.jwtConfig(simpleJWT: SimpleJWT){
 
-    jwt{
-        authSchemes("Token")
+    jwt("default"){
+        authSchemes("Bearer")
         verifier(simpleJWT.verifier)
-        validate { //finds the "id" portion of the JWT payload,
-            println(it.payload.getClaim("id").asString())
-            UserIdPrincipal(it.payload.getClaim("id").asString())
+        validate { credential ->
+            val id = credential.payload.getClaim("id")?.asString()
+            println("DEBUG - Validating JWT, ID: $id")
+
+            if (id != null) {
+                JWTPrincipal(credential.payload)  // Return JWTPrincipal, not UserIdPrincipal
+            } else {
+                null
+            }
         }
     }
 }
