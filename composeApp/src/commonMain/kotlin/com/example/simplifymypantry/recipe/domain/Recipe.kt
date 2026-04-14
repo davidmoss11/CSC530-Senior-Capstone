@@ -15,11 +15,10 @@ data class Recipe(
     val rating: Double = 0.0,
     val mealType: String = "",
     val reviews: List<String> = emptyList(),
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
     val isPublic: Boolean = false,
     val author: String = "",
-    val comments: List<Comment> = emptyList(),
-    val isSaved: Boolean = false
+    val comments: List<Comment> = emptyList()
 )
 
 @Serializable

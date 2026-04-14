@@ -67,7 +67,7 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
 
-        val pantryViewModel = viewModel<PantryViewModel>()
+        //val pantryViewModel = viewModel<PantryViewModel>()
         val recipeViewModel = viewModel<RecipeViewModel>()
         
         val sessionManager = remember { SessionManager(accountDatabase)}
@@ -140,7 +140,8 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
                  composable<Route.Recipes>{
                      RecipeScreen(
                          onCreateRecipeClick = { navController.navigate(Route.CreateRecipe) },
-                         viewModel = sharedRecipeViewModel,
+                         viewModel = recipeViewModel,
+                         pantryViewModel = pantryViewModel,
                          navController = navController
                      )
                  }
