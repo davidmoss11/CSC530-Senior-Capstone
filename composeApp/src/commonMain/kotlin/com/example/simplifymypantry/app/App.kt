@@ -18,6 +18,13 @@ import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
+import com.example.simplifymypantry.account.data.AccountApiService
+import com.example.simplifymypantry.account.data.AccountRepository
+import com.example.simplifymypantry.account.data.DeleteUserUseCase
+import com.example.simplifymypantry.account.data.EditUserUseCase
+import com.example.simplifymypantry.account.data.GetUserUseCase
+import com.example.simplifymypantry.account.data.LoginUserUseCase
+import com.example.simplifymypantry.account.data.RegisterUserUseCase
 import com.example.simplifymypantry.account.presentation.HouseholdScreen
 import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
@@ -31,13 +38,24 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.platformLogWriter
+import com.example.simplifymypantry.account.data.AccountDriver
+import com.example.simplifymypantry.account.data.SessionManager
+import com.example.simplifymypantry.account.data.createAccountDatabase
 import com.example.simplifymypantry.pantry.data.createDatabase
 
+fun initAppLogger() {
+    Logger.setLogWriters(platformLogWriter())
+}
 
 @Composable
-fun App(driverFactory: DriverFactory) {
+fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
     val database = remember { createDatabase(driverFactory) }
+    val accountDatabase = remember { createAccountDatabase(accountDriver)}
     val queries = database.pantryDatabaseQueries
+    val accountDb = accountDatabase.accountDatabaseQueries
+    initAppLogger()
 
     MaterialTheme(
         colorScheme = LightColors,
@@ -49,6 +67,17 @@ fun App(driverFactory: DriverFactory) {
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
 
+        val sessionManager = remember { SessionManager(accountDatabase)}
+
+        //Front End logic and API services
+        val apiService = remember { AccountApiService() }
+        val repository = remember { AccountRepository(apiService) }
+        val editUserUseCase = remember { EditUserUseCase(repository) }
+        val registerUserUseCase = remember {RegisterUserUseCase(repository) }
+        val getUserUseCase = remember { GetUserUseCase(repository) }
+        val deleteUserUseCase = remember { DeleteUserUseCase(repository) }
+        val loginUserUseCase = remember { LoginUserUseCase(repository) }
+
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
@@ -57,7 +86,7 @@ fun App(driverFactory: DriverFactory) {
                  startDestination = Route.LoginPage
              ){
                  composable<Route.LoginPage>{
-                     val loginViewModel = viewModel<LoginViewModel>()
+                     val loginViewModel = viewModel { LoginViewModel(loginUserUseCase) }
                      LoginScreen(
                          viewModel = loginViewModel,
                          onCreateAccount = { navController.navigate(Route.CreateAccount) },
@@ -66,7 +95,7 @@ fun App(driverFactory: DriverFactory) {
                  }
 
                  composable<Route.CreateAccount>{
-                    val createAccountViewModel = viewModel<CreateAccountViewModel>()
+                    val createAccountViewModel = viewModel { CreateAccountViewModel(registerUserUseCase, sessionManager)}
                      CreateAccount(
                          viewModel = createAccountViewModel,
                          onSignIn = { navController.navigate(Route.LoginPage) },
@@ -86,10 +115,11 @@ fun App(driverFactory: DriverFactory) {
                  }
 
                  composable<Route.ViewAccount>{
-                     val viewAccountViewModel = viewModel<ViewAccountViewModel>()
+                     val viewAccountViewModel = viewModel { ViewAccountViewModel(deleteUserUseCase, editUserUseCase, getUserUseCase, sessionManager) }
                      ViewAccount(
                          viewModel = viewAccountViewModel,
-                         navController = navController
+                         navController = navController,
+                         token = "tempToken"
                      )
                  }
 

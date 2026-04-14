@@ -1,0 +1,16 @@
+CREATE TABLE user_session (
+    id TEXT NOT NULL,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL,
+    token TEXT NOT NULL
+);
+
+selectSession:
+SELECT * FROM user_session LIMIT 1;
+
+insertSession:
+INSERT OR REPLACE INTO user_session(id, username, email, token)
+VALUES (?, ?, ?, ?);
+
+clearSession:
+DELETE FROM user_session;

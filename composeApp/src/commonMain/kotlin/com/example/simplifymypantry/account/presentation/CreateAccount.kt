@@ -38,10 +38,12 @@ import simplifymypantry.composeapp.generated.resources.Res
 import simplifymypantry.composeapp.generated.resources.close_24px
 import simplifymypantry.composeapp.generated.resources.visibility_24px
 import simplifymypantry.composeapp.generated.resources.visibility_off_24px
+import co.touchlab.kermit.Logger
 
 @Composable
 fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSkip: () -> Unit){
 
+    val log = Logger.withTag("CreateAccountUI")
     var passwordVisible by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -190,7 +192,9 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSki
                 modifier = Modifier
                     .width(120.dp)
                     .height(60.dp),
-                onClick = { viewModel.createAccountClicked() },
+                onClick = {
+                    log.d{"clicked"}
+                    viewModel.createAccountClicked() },
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary,
@@ -255,8 +259,12 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSki
     if(viewModel.showDialog){
         AlertDialog(
             onDismissRequest = {
+                if (viewModel.dialogMessage == "Account Creation Successful") {
+                    onSkip()
+                }
                 viewModel.showDialog = false
                 viewModel.dialogMessage = ""
+
             },
             title = {Text(
                 text = "Important",
@@ -276,7 +284,4 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSki
             },
         )
     }
-
-
-
 }

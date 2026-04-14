@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.ktor.auth)
     implementation(libs.ktor.auth.jwt)
     implementation(libs.ktor.status.pages)
+    implementation(libs.ktor.serialization.jackson)
     implementation(libs.h2.database)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
@@ -34,4 +35,5 @@ dependencies {
     implementation(libs.postgresql)
     implementation(libs.ktor.content.negotiation)
     implementation(libs.bcrypt)
+    implementation(libs.ktor.server.call.logging)
 }
