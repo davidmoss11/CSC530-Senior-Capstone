@@ -1,11 +1,15 @@
 package com.example.simplifymypantry.recipe.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
@@ -38,8 +42,16 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
-                Text("+")
+            FloatingActionButton(
+                onClick = onCreateRecipeClick,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
+                Text(
+                    text = "Create New Recipe",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     ) { padding ->
@@ -86,6 +98,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
             }
         }
     }
+}
 
     if (reviewingRecipeId != null) {
         var reviewText by remember { mutableStateOf("") }
@@ -153,6 +166,12 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
                     Text("Add")
                 }
             }
-        )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Ingredients: ${recipe.ingredients.take(5).joinToString(", ")}...",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondary
+            )
+        }
     }
 }

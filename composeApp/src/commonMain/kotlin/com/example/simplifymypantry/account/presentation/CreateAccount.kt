@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
@@ -32,12 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import simplifymypantry.composeapp.generated.resources.Res
+import simplifymypantry.composeapp.generated.resources.close_24px
 import simplifymypantry.composeapp.generated.resources.visibility_24px
 import simplifymypantry.composeapp.generated.resources.visibility_off_24px
+import co.touchlab.kermit.Logger
 
 @Composable
-fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit){
+fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSkip: () -> Unit){
 
+    val log = Logger.withTag("CreateAccountUI")
     var passwordVisible by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -186,7 +192,9 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit){
                 modifier = Modifier
                     .width(120.dp)
                     .height(60.dp),
-                onClick = { viewModel.createAccountClicked() },
+                onClick = {
+                    log.d{"clicked"}
+                    viewModel.createAccountClicked() },
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary,
@@ -222,13 +230,41 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit){
             }
 
         }
+
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(
+                    top = 20.dp,
+                    end = 10.dp,
+                    start = 0.dp,
+                    bottom = 0.dp
+                )
+                .size(40.dp),
+            onClick =  onSkip ,
+            colors = IconButtonColors(
+                containerColor = MaterialTheme.colorScheme.onTertiary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContentColor = MaterialTheme.colorScheme.tertiary,
+                disabledContainerColor = MaterialTheme.colorScheme.onPrimary
+            ),
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.close_24px),
+                contentDescription = "Close"
+            )
+        }
     }
 
     if(viewModel.showDialog){
         AlertDialog(
             onDismissRequest = {
+                if (viewModel.dialogMessage == "Account Creation Successful") {
+                    onSkip()
+                }
                 viewModel.showDialog = false
                 viewModel.dialogMessage = ""
+
             },
             title = {Text(
                 text = "Important",
@@ -248,7 +284,4 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit){
             },
         )
     }
-
-
-
 }

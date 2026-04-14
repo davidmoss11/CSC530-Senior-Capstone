@@ -1,20 +1,41 @@
 package com.example.simplifymypantry.pantry.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import com.example.simplifymypantry.pantry.data.PantryDatabaseQueries
 import com.example.simplifymypantry.pantry.domain.PantryItem
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.Dispatchers
+//import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class PantryViewModel : ViewModel() {
-    private val _items = MutableStateFlow<List<PantryItem>>(emptyList())
-    val items: StateFlow<List<PantryItem>> = _items.asStateFlow()
+class PantryViewModel(private val queries: PantryDatabaseQueries) : ViewModel() {
+
+    // Observe the database as a Flow and map to your domain PantryItem
+    val items: StateFlow<List<PantryItem>> = queries.getAllItems()
+        .asFlow()
+        .mapToList(Dispatchers.Default) //was Dispatchers.IO, but I kept getting an error, will revert if needed
+        .map { entities ->
+            entities.map { entity ->
+                PantryItem(
+                    id = entity.id.toString(),
+                    name = entity.name,
+                    quantity = entity.quantity,
+                    category = entity.category,
+                    expirationDate = entity.expirationDate,
+                    dietInfo = entity.dietInfo,
+                    notes = entity.notes
+                )
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _filterQuery = MutableStateFlow("")
     val filterQuery: StateFlow<String> = _filterQuery.asStateFlow()
 
-    val filteredItems = combine(_items, _filterQuery) { items, query ->
+    val filteredItems = combine(items, _filterQuery) { items, query ->
         if (query.isBlank()) {
             items
         } else {
@@ -40,16 +61,44 @@ class PantryViewModel : ViewModel() {
         notes: String = ""
     ) {
         if (name.isBlank()) return
+        viewModelScope.launch {
+            queries.insertItem(
+                name = name,
+                quantity = quantity,
+                category = category,
+                expirationDate = expiry,
+                dietInfo = diet,
+                notes = notes
+            )
+        }
+    }
 
-        val newItem = PantryItem(
-            id = (_items.value.size + 1).toString(),
-            name = name,
-            quantity = quantity,
-            category = category,
-            expirationDate = expiry,
-            dietInfo = diet,
-            notes = notes
-        )
-        _items.value += newItem
+    fun updateItem(
+        id: Long,
+        name: String,
+        quantity: String = "",
+        category: String = "",
+        expiry: String = "",
+        diet: String = "",
+        notes: String = ""
+    ) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            queries.updateItem(
+                name = name,
+                quantity = quantity,
+                category = category,
+                expirationDate = expiry,
+                dietInfo = diet,
+                notes = notes,
+                id = id
+            )
+        }
+    }
+
+    fun deleteItem(id: Long) {
+        viewModelScope.launch {
+            queries.deleteItem(id)
+        }
     }
 }

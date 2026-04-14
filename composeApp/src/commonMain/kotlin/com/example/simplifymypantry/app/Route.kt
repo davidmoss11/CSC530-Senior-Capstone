@@ -24,8 +24,17 @@ sealed interface Route {
     data object Recipes: Route
 
     @Serializable
+    data object CreateRecipe: Route
+
+    @Serializable
+    data class RecipeDetails(val recipeId: String): Route
+
+    @Serializable
     data object Scanner: Route
 
     @Serializable
     data object ViewAccount: Route
+
+    @Serializable
+    data object Household: Route
 }
