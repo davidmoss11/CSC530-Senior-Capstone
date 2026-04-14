@@ -6,17 +6,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
+fun RecipeScreen(onCreateRecipeClick : () -> Unit, viewModel: RecipeViewModel, pantryViewModel: PantryViewModel, navController: NavController) {
     val pantryItems by pantryViewModel.items.collectAsStateWithLifecycle()
     val recipes by viewModel.getFilteredRecipes(pantryItems).collectAsStateWithLifecycle(initialValue = emptyList())
     
@@ -68,7 +69,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
                     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(recipe.title, style = MaterialTheme.typography.headlineSmall)
+                                Text(recipe.name, style = MaterialTheme.typography.headlineSmall)
                                 if (recipe.isOfficial) {
                                     Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small) {
                                         Text("Official", modifier = Modifier.padding(horizontal = 4.dp), style = MaterialTheme.typography.labelSmall)
@@ -98,7 +99,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
             }
         }
     }
-}
+
 
     if (reviewingRecipeId != null) {
         var reviewText by remember { mutableStateOf("") }
@@ -147,31 +148,50 @@ fun RecipeScreen(viewModel: RecipeViewModel, pantryViewModel: PantryViewModel) {
         var instructions by remember { mutableStateOf("") }
         var category by remember { mutableStateOf("") }
 
-        AlertDialog(
-            onDismissRequest = { showAddDialog = false },
-            title = { Text("Add New Recipe") },
-            text = {
-                Column {
-                    TextField(value = title, onValueChange = { title = it }, label = { Text("Title") })
-                    TextField(value = category, onValueChange = { category = it }, label = { Text("Category") })
-                    TextField(value = ingredients, onValueChange = { ingredients = it }, label = { Text("Ingredients (comma separated)") })
-                    TextField(value = instructions, onValueChange = { instructions = it }, label = { Text("Instructions") })
+        if (showAddDialog) {
+            var title by remember { mutableStateOf("") }
+            var ingredients by remember { mutableStateOf("") }
+            var instructions by remember { mutableStateOf("") }
+            var category by remember { mutableStateOf("") }
+
+            AlertDialog(
+                onDismissRequest = { showAddDialog = false },
+                title = { Text("Add New Recipe") },
+                text = {
+                    Column {
+                        TextField(
+                            value = title,
+                            onValueChange = { title = it },
+                            label = { Text("Title") }
+                        )
+                        TextField(
+                            value = category,
+                            onValueChange = { category = it },
+                            label = { Text("Category") }
+                        )
+                        TextField(
+                            value = ingredients,
+                            onValueChange = { ingredients = it },
+                            label = { Text("Ingredients (comma separated)") }
+                        )
+                        TextField(
+                            value = instructions,
+                            onValueChange = { instructions = it },
+                            label = { Text("Instructions") }
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.addRecipe(title, ingredients, instructions, category)
+                        showAddDialog = false
+                    }) {
+                        Text("Add")
+                    }
                 }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    viewModel.addRecipe(title, ingredients, instructions, category)
-                    showAddDialog = false
-                }) {
-                    Text("Add")
-                }
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Ingredients: ${recipe.ingredients.take(5).joinToString(", ")}...",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSecondary
             )
         }
     }
 }
+
+
