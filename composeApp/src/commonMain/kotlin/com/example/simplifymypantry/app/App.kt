@@ -67,6 +67,9 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
 
+        val pantryViewModel = viewModel<PantryViewModel>()
+        val recipeViewModel = viewModel<RecipeViewModel>()
+        
         val sessionManager = remember { SessionManager(accountDatabase)}
 
         //Front End logic and API services

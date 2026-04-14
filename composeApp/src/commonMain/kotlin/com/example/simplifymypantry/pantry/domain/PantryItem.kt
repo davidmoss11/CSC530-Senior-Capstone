@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PantryItem(
     val id: String = "",
-    val name: String, // Mandatory
+    val name: String,
     val quantity: String = "",
     val category: String = "",
     val expirationDate: String = "",
