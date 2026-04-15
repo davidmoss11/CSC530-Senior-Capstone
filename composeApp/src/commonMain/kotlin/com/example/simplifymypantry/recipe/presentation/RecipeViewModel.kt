@@ -47,7 +47,7 @@ class RecipeViewModel : ViewModel() {
         val onlyPantry = args[6] as Boolean
 
         recipes.filter { recipe ->
-            val matchesQuery = recipe.title.contains(query, ignoreCase = true)
+            val matchesQuery = recipe.name.contains(query, ignoreCase = true)
             val matchesPrice = recipe.price <= price
             val matchesDiet = diet.isEmpty() || recipe.dietaryRestrictions.any { it.contains(diet, ignoreCase = true) }
             val matchesType = type.isEmpty() || recipe.mealType.contains(type, ignoreCase = true)
@@ -71,10 +71,10 @@ class RecipeViewModel : ViewModel() {
     fun updateRating(rating: Double) { _minRating.value = rating }
     fun togglePantryFilter() { _onlyPantry.value = !_onlyPantry.value }
 
-    fun addRecipe(title: String, ingredients: String, instructions: String, category: String) {
+    fun addRecipe(name: String, ingredients: String, instructions: String, category: String) {
         val newRecipe = Recipe(
             id = (_recipes.value.size + 1).toString(),
-            title = title,
+            name = name,
             ingredients = ingredients.split(",").map { it.trim() },
             instructions = instructions,
             category = category,

@@ -37,46 +37,35 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
-import com.example.simplifymypantry.recipe.presentation.RecipeViewModel
-import co.touchlab.kermit.Logger
-import co.touchlab.kermit.platformLogWriter
 import com.example.simplifymypantry.account.data.AccountDriver
 import com.example.simplifymypantry.account.data.SessionManager
 import com.example.simplifymypantry.account.data.createAccountDatabase
 import com.example.simplifymypantry.pantry.data.createDatabase
 
-fun initAppLogger() {
-    Logger.setLogWriters(platformLogWriter())
-}
-
 @Composable
 fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
     val database = remember { createDatabase(driverFactory) }
     val accountDatabase = remember { createAccountDatabase(accountDriver)}
+    
+    // Properties might not be generated yet if sync is incomplete, but these are standard names
     val queries = database.pantryDatabaseQueries
     val accountDb = accountDatabase.accountDatabaseQueries
-    initAppLogger()
 
     MaterialTheme(
         colorScheme = LightColors,
         typography = customTypography,
         shapes = customShapes
     ){
-        // We create this here so it's shared between the List and Create screens
         val pantryViewModel = viewModel { PantryViewModel(queries) }
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
-
-        //val pantryViewModel = viewModel<PantryViewModel>()
-        val recipeViewModel = viewModel<RecipeViewModel>()
         
         val sessionManager = remember { SessionManager(accountDatabase)}
 
-        //Front End logic and API services
         val apiService = remember { AccountApiService() }
         val repository = remember { AccountRepository(apiService) }
         val editUserUseCase = remember { EditUserUseCase(repository) }
-        val registerUserUseCase = remember {RegisterUserUseCase(repository) }
+        val registerUserUseCase = remember { RegisterUserUseCase(repository) }
         val getUserUseCase = remember { GetUserUseCase(repository) }
         val deleteUserUseCase = remember { DeleteUserUseCase(repository) }
         val loginUserUseCase = remember { LoginUserUseCase(repository) }
@@ -127,7 +116,6 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
                  }
 
                  composable<Route.CreateRecipe>{
-                     // Pass the shared viewModel so we can add the recipe to the list
                      val createRecipeViewModel = viewModel {
                          CreateRecipeScreenViewModel(sharedRecipeViewModel)
                      }
@@ -140,7 +128,7 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
                  composable<Route.Recipes>{
                      RecipeScreen(
                          onCreateRecipeClick = { navController.navigate(Route.CreateRecipe) },
-                         viewModel = recipeViewModel,
+                         viewModel = sharedRecipeViewModel,
                          pantryViewModel = pantryViewModel,
                          navController = navController
                      )
@@ -148,12 +136,12 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
 
                  composable<Route.RecipeDetails>{ backStackEntry -> 
                      val route : Route.RecipeDetails = backStackEntry.toRoute()
-                     val recipeViewModel = viewModel {
+                     val recipeDetailViewModel = viewModel {
                          RecipeDetailViewModel(route.recipeId, sharedRecipeViewModel)
                      }
 
                      RecipeDetailScreen(
-                         viewModel = recipeViewModel,
+                         viewModel = recipeDetailViewModel,
                          navController = navController
                      )
                  }

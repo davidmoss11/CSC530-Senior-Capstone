@@ -1,15 +1,11 @@
 package com.example.simplifymypantry.recipe.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -17,7 +13,12 @@ import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeScreen(onCreateRecipeClick : () -> Unit, viewModel: RecipeViewModel, pantryViewModel: PantryViewModel, navController: NavController) {
+fun RecipeScreen(
+    onCreateRecipeClick: () -> Unit,
+    viewModel: RecipeScreenViewModel,
+    pantryViewModel: PantryViewModel,
+    navController: NavController
+) {
     val pantryItems by pantryViewModel.items.collectAsStateWithLifecycle()
     val recipes by viewModel.getFilteredRecipes(pantryItems).collectAsStateWithLifecycle(initialValue = emptyList())
     
@@ -27,7 +28,6 @@ fun RecipeScreen(onCreateRecipeClick : () -> Unit, viewModel: RecipeViewModel, p
     val typeFilter by viewModel.typeFilter.collectAsStateWithLifecycle()
     val onlyPantry by viewModel.onlyPantry.collectAsStateWithLifecycle()
 
-    var showAddDialog by remember { mutableStateOf(false) }
     var showFilterDialog by remember { mutableStateOf(false) }
     var reviewingRecipeId by remember { mutableStateOf<String?>(null) }
 
@@ -100,7 +100,6 @@ fun RecipeScreen(onCreateRecipeClick : () -> Unit, viewModel: RecipeViewModel, p
         }
     }
 
-
     if (reviewingRecipeId != null) {
         var reviewText by remember { mutableStateOf("") }
         AlertDialog(
@@ -141,57 +140,4 @@ fun RecipeScreen(onCreateRecipeClick : () -> Unit, viewModel: RecipeViewModel, p
             }
         )
     }
-
-    if (showAddDialog) {
-        var title by remember { mutableStateOf("") }
-        var ingredients by remember { mutableStateOf("") }
-        var instructions by remember { mutableStateOf("") }
-        var category by remember { mutableStateOf("") }
-
-        if (showAddDialog) {
-            var title by remember { mutableStateOf("") }
-            var ingredients by remember { mutableStateOf("") }
-            var instructions by remember { mutableStateOf("") }
-            var category by remember { mutableStateOf("") }
-
-            AlertDialog(
-                onDismissRequest = { showAddDialog = false },
-                title = { Text("Add New Recipe") },
-                text = {
-                    Column {
-                        TextField(
-                            value = title,
-                            onValueChange = { title = it },
-                            label = { Text("Title") }
-                        )
-                        TextField(
-                            value = category,
-                            onValueChange = { category = it },
-                            label = { Text("Category") }
-                        )
-                        TextField(
-                            value = ingredients,
-                            onValueChange = { ingredients = it },
-                            label = { Text("Ingredients (comma separated)") }
-                        )
-                        TextField(
-                            value = instructions,
-                            onValueChange = { instructions = it },
-                            label = { Text("Instructions") }
-                        )
-                    }
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        viewModel.addRecipe(title, ingredients, instructions, category)
-                        showAddDialog = false
-                    }) {
-                        Text("Add")
-                    }
-                }
-            )
-        }
-    }
 }
-
-
