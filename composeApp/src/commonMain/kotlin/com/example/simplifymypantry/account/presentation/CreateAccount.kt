@@ -46,6 +46,10 @@ fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSki
     val log = Logger.withTag("CreateAccountUI")
     var passwordVisible by remember { mutableStateOf(false) }
 
+    if(viewModel.isSuccessful){
+        onSkip()
+    }
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier

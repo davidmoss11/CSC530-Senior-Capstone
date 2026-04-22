@@ -8,9 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.simplifymypantry.account.data.LoginUserUseCase
 import kotlinx.coroutines.launch
 import co.touchlab.kermit.Logger
+import com.example.simplifymypantry.account.data.SessionManager
 
 class LoginViewModel(
-    private val loginUserUseCase: LoginUserUseCase
+    private val loginUserUseCase: LoginUserUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     val log = Logger.withTag("LoginViewModel")
@@ -19,6 +21,7 @@ class LoginViewModel(
     var password by mutableStateOf("")
     var showDialog by mutableStateOf(false)
     var dialogMessage by mutableStateOf("")
+    var isLoggedIn by mutableStateOf(false)
 
     fun loginButtonClicked() {
         log.d("loginButtonClicked")
@@ -29,15 +32,23 @@ class LoginViewModel(
 
         viewModelScope.launch{
             loginUserUseCase.invoke(username, username, password) //username twice because they can enter either
+                .onSuccess{ user ->
+                    sessionManager.saveSession(
+                        id = user.id,
+                        username = user.username,
+                        email = user.email,
+                        token = user.token
+                    )
+                    isLoggedIn = true
+                    dialogMessage = "Successfully Logged In"
+                    showDialog = true
+                }
+                .onFailure{ error ->
+                    error.message?.let { log.d(it) }
+                    dialogMessage = "Failed to Login"
+                    showDialog = true
+                }
         }
-    }
-
-    fun createAccountButtonClicked() {
-
-    }
-
-    fun cornerXButtonClicked() {
-
     }
 
 }

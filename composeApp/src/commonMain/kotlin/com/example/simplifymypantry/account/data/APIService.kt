@@ -36,10 +36,15 @@ class AccountApiService{
 
     suspend fun deleteUser(
         token: String
-    ) : MessageResponse{
-        return client.delete("$base_url/user"){
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
+    ) : Result<String>{
+        return try {
+            client.delete("$base_url/user") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            Result.success("User deleted successfully")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun getUser(

@@ -48,6 +48,14 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
+            implementation(libs.mlkit.barcode)
+
+            implementation(libs.camerax.core)
+            implementation(libs.camerax.camera2)
+            implementation(libs.camerax.lifecycle)
+            implementation(libs.camerax.view)
+            implementation(libs.accompanist.permissions)
+            implementation(libs.ktor.client.android)
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
@@ -71,6 +79,8 @@ kotlin {
             implementation(libs.settings)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.coil.compose)
+            implementation(libs.coil3.network.ktor3)
 
         }
         commonTest.dependencies {
@@ -80,6 +90,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.sqldelight.sqlite.driver)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         // Since iosArm64 and iosSimulatorArm64 are defined, we use their shared source set or specific ones
         // Usually, there is an 'iosMain' created by convention if you define ios targets
@@ -122,6 +136,10 @@ kotlin {
             create("AccountDatabase") {
                 packageName.set("com.example.simplifymypantry.account.data")
                 srcDirs.setFrom("src/commonMain/sqldelight/Account")
+            }
+            create("PantryItemCache") {
+                packageName.set("com.example.simplifymypantry.scanner.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/PantryAPICache")
             }
         }
     }

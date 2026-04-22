@@ -23,7 +23,7 @@ class AppViewModelFactory(
         return when (modelClass) {
 
             LoginViewModel::class ->
-                LoginViewModel(loginUserUseCase) as T
+                LoginViewModel(loginUserUseCase, sessionManager) as T
 
             CreateAccountViewModel::class ->
                 CreateAccountViewModel(registerUserUseCase, sessionManager) as T
