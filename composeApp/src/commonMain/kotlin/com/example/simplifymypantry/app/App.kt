@@ -19,6 +19,7 @@ import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
 import com.example.simplifymypantry.account.data.AccountApiService
+import com.example.simplifymypantry.account.data.AccountDatabase
 import com.example.simplifymypantry.account.data.AccountRepository
 import com.example.simplifymypantry.account.data.DeleteUserUseCase
 import com.example.simplifymypantry.account.data.EditUserUseCase
@@ -28,7 +29,6 @@ import com.example.simplifymypantry.account.data.RegisterUserUseCase
 import com.example.simplifymypantry.account.presentation.HouseholdScreen
 import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
-import com.example.simplifymypantry.pantry.data.DriverFactory
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 import com.example.simplifymypantry.recipe.presentation.CreateRecipeScreen
@@ -37,19 +37,25 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
-import com.example.simplifymypantry.account.data.AccountDriver
 import com.example.simplifymypantry.account.data.SessionManager
-import com.example.simplifymypantry.account.data.createAccountDatabase
-import com.example.simplifymypantry.pantry.data.createDatabase
+import com.example.simplifymypantry.pantry.data.PantryDatabase
+import com.example.simplifymypantry.scanner.data.ImageSaver
+import com.example.simplifymypantry.scanner.data.OpenFoodFactsAPI
+import com.example.simplifymypantry.scanner.data.PantryItemCache
+import com.example.simplifymypantry.scanner.data.Scanner
+import com.example.simplifymypantry.scanner.presentation.ScannerScreen
+import com.example.simplifymypantry.scanner.presentation.ScannerScreenViewModel
 
 @Composable
-fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
-    val database = remember { createDatabase(driverFactory) }
-    val accountDatabase = remember { createAccountDatabase(accountDriver)}
-    
+fun App(
+    database: PantryDatabase,
+    accountDatabase: AccountDatabase,
+    scannerDatabase: PantryItemCache,
+    scanner: Scanner,
+    imageSaver: ImageSaver
+){
     // Properties might not be generated yet if sync is incomplete, but these are standard names
     val queries = database.pantryDatabaseQueries
-    val accountDb = accountDatabase.accountDatabaseQueries
 
     MaterialTheme(
         colorScheme = LightColors,
@@ -59,6 +65,11 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
         val pantryViewModel = viewModel { PantryViewModel(queries) }
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
+
+        val openFoodFactsApi = remember { OpenFoodFactsAPI() }
+        val scannerScreenViewModel = viewModel {
+            ScannerScreenViewModel(scanner, openFoodFactsApi, scannerDatabase, imageSaver)
+        }
         
         val sessionManager = remember { SessionManager(accountDatabase)}
 
@@ -70,15 +81,23 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
         val deleteUserUseCase = remember { DeleteUserUseCase(repository) }
         val loginUserUseCase = remember { LoginUserUseCase(repository) }
 
+        val session = sessionManager.getSession()
+
+        val startDestination = if (session != null) {
+            Route.HomeScreen
+        } else {
+            Route.LoginPage
+        }
+
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
         ) {
              navigation<Route.AppGraph>(
-                 startDestination = Route.LoginPage
+                 startDestination = startDestination
              ){
                  composable<Route.LoginPage>{
-                     val loginViewModel = viewModel { LoginViewModel(loginUserUseCase) }
+                     val loginViewModel = viewModel { LoginViewModel(loginUserUseCase, sessionManager) }
                      LoginScreen(
                          viewModel = loginViewModel,
                          onCreateAccount = { navController.navigate(Route.CreateAccount) },
@@ -156,6 +175,14 @@ fun App(driverFactory: DriverFactory, accountDriver: AccountDriver) {
 
                  composable<Route.Pantry> {
                      PantryScreen(viewModel = pantryViewModel, navController = navController)
+                 }
+
+                 composable<Route.Scanner> {
+
+                     ScannerScreen(
+                         viewModel = scannerScreenViewModel,
+                         returnHome = { navController.navigate(Route.HomeScreen) }
+                     )
                  }
              }
         }

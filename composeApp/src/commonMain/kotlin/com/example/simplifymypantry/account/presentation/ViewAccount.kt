@@ -83,7 +83,7 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
                         Card(
                             modifier = Modifier
                                 .padding(20.dp)
-                                .width(200.dp)
+                                .width(280.dp)
                                 .align(Alignment.CenterHorizontally),
                             colors = CardColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -113,7 +113,7 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
                         Card(
                             modifier = Modifier
                                 .padding(20.dp)
-                                .width(200.dp)
+                                .width(280.dp)
                                 .align(Alignment.CenterHorizontally),
                             colors = CardColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -166,7 +166,7 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
                         Button(
                             modifier = Modifier
                                 .width(180.dp),
-                            onClick = { viewModel.deleteAccount()}
+                            onClick = { viewModel.deleteAccount() }
                         ) {
                             //delete AccountDatabase
                             Text(
@@ -174,39 +174,23 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                    }
-                    else{
-                        Text( text = "Account not Logged In")
-                        Button(
-                            modifier = Modifier
-                                .width(180.dp),
-                            onClick = {navController.navigate(Route.LoginPage)}
-                        ){
-                            Text(
-                                text = "Login",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        Button(
-                            modifier = Modifier
-                                .width(180.dp),
-                            onClick = {navController.navigate(Route.CreateAccount)}
-                        ){
-                            Text(
-                                text = "Create Account",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
 
+                        Button(
+                            modifier = Modifier
+                                .width(180.dp),
+                            onClick = { viewModel.logoutUser() }
+                        ) {
+                            Text(
+                                text = "Log Out",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                 }
             }
         }
         else -> {
-            // Show login button
-            Button(onClick = { navController.navigate(Route.LoginPage) }) {
-                Text("Log In")
-            }
+            navController.navigate(Route.LoginPage)
         }
     }
 
@@ -214,6 +198,31 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
         EditAccountDialog(
             viewModel = viewModel,
             token = token
+        )
+    }
+
+    if(viewModel.showDialog){
+        AlertDialog(
+            onDismissRequest = {
+                viewModel.showDialog = false
+                viewModel.dialogMessage = ""
+            },
+            title = {Text(
+                text = "Important",
+                color = MaterialTheme.colorScheme.onSecondary
+            )},
+            text = {Text(
+                text = viewModel.dialogMessage,
+                color = MaterialTheme.colorScheme.onSecondary)},
+            confirmButton = {
+                Button(
+                    onClick = { viewModel.showDialog = false }
+                ) {
+                    Text(
+                        text = "Dismiss",
+                        color = MaterialTheme.colorScheme.onSecondary)
+                }
+            },
         )
     }
 }

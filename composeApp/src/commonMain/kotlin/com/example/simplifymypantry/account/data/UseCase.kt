@@ -43,16 +43,13 @@ class RegisterUserUseCase(
 class EditUserUseCase(
     private val repository : AccountRepository
 ){
+    var log = Logger.withTag("EditUserUseCase")
     suspend operator fun invoke(
         token: String,
         username: String?,
         email: String?,
         password: String?
     ) : Result<ReturnedAccount> {
-
-        if (!token.startsWith("Bearer ")) {
-            return Result.failure(Exception("Invalid token type"))
-        }
         if (token.isBlank()) {
             return Result.failure(Exception("Token is missing"))
         }
@@ -92,9 +89,6 @@ class GetUserUseCase(
     suspend operator fun invoke(
         token: String
     ) : Result<ReturnedAccount> {
-        if (!token.startsWith("Bearer ")) {
-            return Result.failure(Exception("Invalid token type"))
-        }
         if (token.isBlank()) {
             return Result.failure(Exception("Token is missing"))
         }
@@ -109,9 +103,6 @@ class DeleteUserUseCase(
     suspend operator fun invoke(
         token: String
     ) : Result<String> {
-        if (!token.startsWith("Bearer ")) {
-            return Result.failure(Exception("Invalid token type"))
-        }
         if (token.isBlank()) {
             return Result.failure(Exception("Token is missing"))
         }

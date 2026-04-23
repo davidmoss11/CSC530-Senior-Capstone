@@ -23,6 +23,7 @@ class CreateAccountViewModel(
     var dialogMessage by mutableStateOf("")
 
     var isLoading by mutableStateOf(false)
+    var isSuccessful by mutableStateOf(false)
 
     fun createAccountClicked(){
         print("Create Account View Model Function Activated")
@@ -45,6 +46,8 @@ class CreateAccountViewModel(
                     )
                     dialogMessage = "Account Creation Successful"
                     showDialog = true
+                    isSuccessful = true
+                    //go to home screen
                 }
                 .onFailure { error ->
                     dialogMessage = error.message ?: "Registration failed"

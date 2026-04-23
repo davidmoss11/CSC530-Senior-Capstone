@@ -1,0 +1,31 @@
+CREATE TABLE scannerItemEntity (
+    code TEXT NOT NULL PRIMARY KEY,
+    productType TEXT,
+    productName TEXT NOT NULL,
+    productQuantity REAL,
+    productQuantityUnit TEXT,
+    quantity TEXT,
+    foodGroups TEXT,
+    brandsTags TEXT,
+    categoriesTags TEXT,
+    labelsTags TEXT,
+    allergensTags TEXT,
+    allergensFromIngredients TEXT,
+    expirationDate TEXT,
+    selectedImages TEXT,
+    ingredients TEXT,
+    nutriments TEXT
+);
+
+insertItem:
+INSERT OR REPLACE INTO scannerItemEntity(
+code, productType, productName, productQuantity, productQuantityUnit, quantity, foodGroups, brandsTags, categoriesTags,
+labelsTags, allergensTags,allergensFromIngredients, expirationDate, selectedImages, ingredients, nutriments)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+
+findItem:
+SELECT * FROM scannerItemEntity
+WHERE code = ?;
+
+clearItems:
+DELETE FROM scannerItemEntity;

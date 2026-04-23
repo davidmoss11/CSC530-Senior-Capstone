@@ -5,6 +5,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.example.simplifymypantry.account.data.DeleteUserUseCase
 import com.example.simplifymypantry.account.data.EditUserUseCase
 import com.example.simplifymypantry.account.data.GetUserUseCase
@@ -18,15 +19,24 @@ class ViewAccountViewModel(
     private val getUserUseCase : GetUserUseCase,
     private val sessionManager : SessionManager
 ): ViewModel() {
+    val log = Logger.withTag("ViewAccountViewModel")
+
     var username by mutableStateOf<String?>(null)
     var email by mutableStateOf<String?>(null)
     var password by mutableStateOf("")
     var token by mutableStateOf("")
+
+    var changedUsername by mutableStateOf<String?>(null)
+    var changedEmail by mutableStateOf<String?>(null)
+    var changedPassword by mutableStateOf<String?>(null)
     var isLoggedIn by mutableStateOf(false)
     var isCheckComplete by mutableStateOf(false)
     var showEditDialog by mutableStateOf(false)
     var editDialogType by mutableStateOf(EditType.USERNAME)
     var editDialogValue by mutableStateOf("")
+
+    var showDialog by mutableStateOf(false)
+    var dialogMessage by mutableStateOf("")
     enum class EditType {
         USERNAME, EMAIL, PASSWORD
     }
@@ -68,29 +78,32 @@ class ViewAccountViewModel(
         viewModelScope.launch{
             deleteUserUseCase.invoke(token)
                 .onSuccess {
+                    sessionManager.clear()
                     isLoggedIn = false
-                    //popup
+                    dialogMessage = "Successfully Deleted Account"
+                    showDialog = true
                 }
                 .onFailure {
-                    //popup
+
+                    dialogMessage = "Failed to Delete Account. Try Again"
+                    showDialog = true
                 }
         }
     }
 
     fun confirmEdit() {
         when (editDialogType) {
-            EditType.USERNAME -> username = editDialogValue
-            EditType.EMAIL -> email = editDialogValue
-            EditType.PASSWORD -> password = editDialogValue
+            EditType.USERNAME -> changedUsername = editDialogValue
+            EditType.EMAIL -> changedEmail = editDialogValue
+            EditType.PASSWORD -> changedPassword = editDialogValue
         }
-
         editAccount()
     }
 
     fun editAccount(){
 
         viewModelScope.launch{
-            editUserUseCase.invoke(token, username, email, password)
+            editUserUseCase.invoke(token, changedUsername, changedEmail, changedPassword)
                 .onSuccess { user ->
                     sessionManager.clear()
                     sessionManager.saveSession(
@@ -99,13 +112,18 @@ class ViewAccountViewModel(
                         email = user.email,
                         token = user.token
                     )
-                    isLoggedIn = true
-                    isCheckComplete = true
+                    username = user.username
+                    email = user.email
+                    token = user.token
+                    log.d("EditAccount Successful")
                     password = ""
+                    dialogMessage = "Edits Saved"
+                    showDialog = true
                 }
-                .onFailure{
-                    isLoggedIn = false
-                    isCheckComplete = true
+                .onFailure{ error ->
+                    error.message?.let { log.d(it) }
+                    dialogMessage = "Failed to Save Changes"
+                    showDialog = true
                 }
         }
     }
@@ -123,10 +141,12 @@ class ViewAccountViewModel(
                         token = user.token
                     )
                     isLoggedIn = true
+                    isCheckComplete = true
                     password = ""
                 }
                 .onFailure{
-
+                    isLoggedIn = false
+                    isCheckComplete = true
                 }
         }
     }
@@ -134,5 +154,7 @@ class ViewAccountViewModel(
     fun logoutUser(){
         sessionManager.clear()
         isLoggedIn = false
+        dialogMessage = "Successfully Logged Out"
+        showDialog = true
     }
 }

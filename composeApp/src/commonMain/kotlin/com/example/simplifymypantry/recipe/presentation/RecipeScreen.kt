@@ -5,13 +5,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.simplifymypantry.core.HamburgerMenu
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
+import org.jetbrains.compose.resources.painterResource
+import simplifymypantry.composeapp.generated.resources.Res
+import simplifymypantry.composeapp.generated.resources.filter_list_24px
 import com.example.simplifymypantry.core.HamburgerMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,13 +44,20 @@ fun RecipeScreen(
             TopAppBar(
                 title = { Text("Recipes") },
                 navigationIcon = { HamburgerMenu(navController) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                colors = TopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary),
+                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary,
+                    subtitleContentColor = MaterialTheme.colorScheme.onSecondary),
                 actions = {
-                    TextButton(onClick = { showFilterDialog = true }) {
-                        Text("Filter", color = MaterialTheme.colorScheme.onPrimary)
+                    IconButton(onClick = { showFilterDialog = true }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.filter_list_24px),
+                            contentDescription = "Filter",
+                            tint = Color.White
+                        )
                     }
                 }
             )
@@ -69,7 +81,13 @@ fun RecipeScreen(
                 value = searchQuery,
                 onValueChange = { viewModel.updateSearch(it) },
                 label = { Text("Search recipes...") },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                    focusedContainerColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondary
+
+                )
             )
 
             LazyColumn {
@@ -178,25 +196,40 @@ fun RecipeScreen(
 
     if (reviewingRecipeId != null) {
         var reviewText by remember { mutableStateOf("") }
+
         AlertDialog(
             onDismissRequest = { reviewingRecipeId = null },
-            title = { Text("Write a Review") },
+            containerColor = MaterialTheme.colorScheme.secondary,
+            titleContentColor = MaterialTheme.colorScheme.onSecondary,
+            textContentColor = MaterialTheme.colorScheme.onSecondary,
+            title = {
+                Text("Write a Review")
+            },
             text = {
                 TextField(
-                    value = reviewText, 
-                    onValueChange = { reviewText = it }, 
+                    value = reviewText,
+                    onValueChange = { reviewText = it },
                     label = { Text("Your review") },
-                    modifier = Modifier.fillMaxWidth()
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.primary,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
             },
             confirmButton = {
-                Button(onClick = {
-                    reviewingRecipeId?.let { viewModel.addReview(it, reviewText) }
-                    reviewingRecipeId = null
-                }) { Text("Submit") }
-            },
-            dismissButton = {
-                TextButton(onClick = { reviewingRecipeId = null }) { Text("Cancel") }
+                Button(
+                    onClick = {
+                        reviewingRecipeId?.let { viewModel.addReview(it, reviewText) }
+                        reviewingRecipeId = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Submit")
+                }
             }
         )
     }
@@ -204,29 +237,65 @@ fun RecipeScreen(
     if (showFilterDialog) {
         AlertDialog(
             onDismissRequest = { showFilterDialog = false },
-            title = { Text("Filter Recipes") },
+            containerColor = MaterialTheme.colorScheme.secondary,
+            titleContentColor = MaterialTheme.colorScheme.onSecondary,
+            textContentColor = MaterialTheme.colorScheme.onSecondary,
+            title = {
+                Text("Filter Recipes")
+            },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Column {
-                        Text("Max Price: $${maxPrice.toInt()}")
-                        Slider(
-                            value = maxPrice.toFloat(), 
-                            onValueChange = { viewModel.updatePrice(it.toDouble()) }, 
-                            valueRange = 0f..100f
+                Column {
+                    Text("Max Price: $${maxPrice.toInt()}")
+
+                    Slider(
+                        value = maxPrice.toFloat(),
+                        onValueChange = { viewModel.updatePrice(it.toDouble()) },
+                        valueRange = 0f..100f
+                    )
+
+                    TextField(
+                        value = dietFilter,
+                        onValueChange = { viewModel.updateDiet(it) },
+                        label = { Text("Dietary Restriction") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.primary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimary
                         )
-                    }
-                    
-                    TextField(value = dietFilter, onValueChange = { viewModel.updateDiet(it) }, label = { Text("Dietary Restriction") }, modifier = Modifier.fillMaxWidth())
-                    TextField(value = typeFilter, onValueChange = { viewModel.updateType(it) }, label = { Text("Meal Type") }, modifier = Modifier.fillMaxWidth())
-                    
-                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                        Checkbox(checked = onlyPantry, onCheckedChange = { viewModel.togglePantryFilter() })
+                    )
+
+                    TextField(
+                        value = typeFilter,
+                        onValueChange = { viewModel.updateType(it) },
+                        label = { Text("Meal Type") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.primary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = onlyPantry,
+                            onCheckedChange = { viewModel.togglePantryFilter() }
+                        )
                         Text("Only what's in my pantry")
                     }
                 }
             },
             confirmButton = {
-                Button(onClick = { showFilterDialog = false }) { Text("Done") }
+                Button(
+                    onClick = { showFilterDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Done")
+                }
             }
         )
     }
