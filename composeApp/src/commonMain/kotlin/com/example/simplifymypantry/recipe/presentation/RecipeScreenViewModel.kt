@@ -7,11 +7,18 @@ import com.example.simplifymypantry.pantry.domain.PantryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+
+data class RecipeMatch(
+    val recipe: Recipe,
+    val missingIngredients: List<String>
+)
 
 class RecipeScreenViewModel : ViewModel() {
     private val _recipes = mutableStateListOf<Recipe>(
-        Recipe("1", "Pasta", listOf("Pasta", "Tomato"), "Boil pasta.", "Italian", isOfficial = true, price = 5.0, dietaryRestrictions = listOf("Vegetarian"), rating = 4.5, mealType = "Dinner"),
-        Recipe("2", "Salad", listOf("Lettuce", "Cucumber"), "Mix it.", "Healthy", isOfficial = true, price = 3.0, dietaryRestrictions = listOf("Vegan"), rating = 4.0, mealType = "Lunch")
+        Recipe("1", "Pasta", listOf("Pasta", "Tomato", "Basil"), "Boil pasta.", "Italian", isOfficial = true, price = 5.0, dietaryRestrictions = listOf("Vegetarian"), rating = 4.5, mealType = "Dinner"),
+        Recipe("2", "Salad", listOf("Lettuce", "Cucumber", "Olive Oil"), "Mix it.", "Healthy", isOfficial = true, price = 3.0, dietaryRestrictions = listOf("Vegan"), rating = 4.0, mealType = "Lunch"),
+        Recipe("3", "Omelette", listOf("Eggs", "Cheese", "Milk"), "Fry it.", "Breakfast", isOfficial = true, price = 2.0, dietaryRestrictions = listOf("Vegetarian"), rating = 4.8, mealType = "Breakfast")
     )
     val recipes: List<Recipe> = _recipes
 
@@ -44,22 +51,24 @@ class RecipeScreenViewModel : ViewModel() {
         val rating = args[5] as Double
         val onlyPantry = args[6] as Boolean
 
-        recipes.filter { recipe ->
+        val pantryNames = pantryItems.map { it.name.lowercase() }
+
+        recipes.map { recipe ->
+            val missing = recipe.ingredients.filter { ingredient ->
+                pantryNames.none { it.contains(ingredient.lowercase()) || ingredient.lowercase().contains(it) }
+            }
+            RecipeMatch(recipe, missing)
+        }.filter { match ->
+            val recipe = match.recipe
             val matchesQuery = recipe.name.contains(query, ignoreCase = true)
             val matchesPrice = recipe.price <= price
             val matchesDiet = diet.isEmpty() || recipe.dietaryRestrictions.any { it.contains(diet, ignoreCase = true) }
             val matchesType = type.isEmpty() || recipe.mealType.contains(type, ignoreCase = true)
             val matchesRating = recipe.rating >= rating
-            
-            val matchesPantry = if (onlyPantry) {
-                val pantryNames = pantryItems.map { it.name.lowercase() }
-                recipe.ingredients.all { ingredient -> 
-                    pantryNames.any { it.contains(ingredient.lowercase()) }
-                }
-            } else true
+            val matchesPantry = !onlyPantry || match.missingIngredients.isEmpty()
 
             matchesQuery && matchesPrice && matchesDiet && matchesType && matchesRating && matchesPantry
-        }
+        }.sortedBy { it.missingIngredients.size }
     }
 
     fun updateSearch(query: String) { _searchQuery.value = query }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -16,6 +17,7 @@ import com.example.simplifymypantry.pantry.presentation.PantryViewModel
 import org.jetbrains.compose.resources.painterResource
 import simplifymypantry.composeapp.generated.resources.Res
 import simplifymypantry.composeapp.generated.resources.filter_list_24px
+import com.example.simplifymypantry.core.HamburgerMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,58 +91,97 @@ fun RecipeScreen(
             )
 
             LazyColumn {
-                items(recipes) { recipe ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                items(recipes) { match ->
+                    val recipe = match.recipe
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                            containerColor = Color.Black,
+                            contentColor = Color.White
                         )
-                        ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(recipe.name,
+                                Text(
+                                    recipe.name, 
                                     style = MaterialTheme.typography.headlineSmall,
-                                    color = MaterialTheme.colorScheme.onSecondary
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
-                                if (recipe.isOfficial) {
-                                    Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small) {
-                                        Text("Official", modifier = Modifier.padding(horizontal = 4.dp), style = MaterialTheme.typography.labelSmall)
+                                Row {
+                                    if (match.missingIngredients.isEmpty()) {
+                                        Surface(
+                                            color = Color(0xFF4CAF50), 
+                                            shape = MaterialTheme.shapes.small
+                                        ) {
+                                            Text(
+                                                "Can Cook Now", 
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), 
+                                                style = MaterialTheme.typography.labelSmall, 
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                    }
+                                    if (recipe.isOfficial) {
+                                        Surface(
+                                            color = MaterialTheme.colorScheme.secondary, 
+                                            shape = MaterialTheme.shapes.small
+                                        ) {
+                                            Text(
+                                                "Official", 
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), 
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSecondary
+                                            )
+                                        }
                                     }
                                 }
                             }
-                            Text(
-                                "Type: ${recipe.mealType} | Price: $${recipe.price}",
-                                color = MaterialTheme.colorScheme.onSecondary
+                            
+                            Spacer(modifier = Modifier.height(4.dp))
+                            
+                            Text("Type: ${recipe.mealType} | Price: $${recipe.price}", color = Color.LightGray)
+                            Text("Rating: ${recipe.rating} stars", color = Color.LightGray)
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Text("Ingredients:", fontWeight = FontWeight.SemiBold)
+                            Text(recipe.ingredients.joinToString(", "), color = Color.LightGray)
+                            
+                            if (match.missingIngredients.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    "Missing: ${match.missingIngredients.joinToString(", ")}",
+                                    color = Color(0xFFFF5252), // Bright red for black background
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold
                                 )
-                            Text(
-                                "Rating: ${recipe.rating} stars",
-                                color = MaterialTheme.colorScheme.onSecondary
-                                )
-                            Text(
-                                "Ingredients: ${recipe.ingredients.joinToString(", ")}",
-                                color = MaterialTheme.colorScheme.onSecondary
-                                )
+                            }
                             
                             if (recipe.reviews.isNotEmpty()) {
-                                Text(
-                                    "Recent Review: ${recipe.reviews.last()}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSecondary
-                                    )
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = Color.DarkGray)
+                                Text("Recent Review:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = Color.LightGray)
+                                Text("\"${recipe.reviews.last()}\"", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
                             }
 
-                            Row {
-                                Button(onClick = { viewModel.toggleSaveRecipe(recipe.id) },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.secondary
-                                    )
-                                    ) {
-                                    Text(
-                                        if (recipe.isSaved) "Saved" else "Save")
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                                OutlinedButton(
+                                    onClick = { viewModel.toggleSaveRecipe(recipe.id) },
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White)
+                                ) {
+                                    Text(if (recipe.isSaved) "❤️ Saved" else "🤍 Save")
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Button(onClick = { reviewingRecipeId = recipe.id },
+                                Button(
+                                    onClick = { reviewingRecipeId = recipe.id },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.secondary
+                                        containerColor = MaterialTheme.colorScheme.secondary,
+                                        contentColor = MaterialTheme.colorScheme.onSecondary
                                     )
                                 ) {
                                     Text("Review")
