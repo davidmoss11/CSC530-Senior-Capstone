@@ -11,6 +11,4 @@ class ViewAccountViewModel : ViewModel() {
     var email by mutableStateOf("")
     var name by mutableStateOf("")
     var isLoggedIn by mutableStateOf(true)
-    
-    var pushNotificationsEnabled by mutableStateOf(false)
 }

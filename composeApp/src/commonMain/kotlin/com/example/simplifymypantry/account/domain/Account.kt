@@ -1,9 +1,17 @@
 package com.example.simplifymypantry.account.domain
 
-data class Account(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ReturnedAccount(
+    val id: String,
     val username: String,
     val email: String,
-    val password: String,
-    val loggedIn: Boolean
+    val token: String
+)
 
+data class SentAccount(
+    val username: String,
+    val email: String,
+    val password: String
 )

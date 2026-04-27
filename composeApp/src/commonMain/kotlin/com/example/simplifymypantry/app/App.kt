@@ -18,6 +18,16 @@ import com.example.simplifymypantry.home.presentation.HomeScreenViewModel
 import com.example.simplifymypantry.account.presentation.CreateAccountViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
+import com.example.simplifymypantry.account.data.AccountApiService
+import com.example.simplifymypantry.account.data.AccountDatabase
+import com.example.simplifymypantry.account.data.AccountRepository
+import com.example.simplifymypantry.account.data.DeleteUserUseCase
+import com.example.simplifymypantry.account.data.EditUserUseCase
+import com.example.simplifymypantry.account.data.GetUserUseCase
+import com.example.simplifymypantry.account.data.LoginUserUseCase
+import com.example.simplifymypantry.account.data.RegisterUserUseCase
+import com.example.simplifymypantry.account.presentation.HouseholdScreen
+import com.example.simplifymypantry.account.presentation.HouseholdViewModel
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
 import com.example.simplifymypantry.pantry.presentation.PantryScreen
 import com.example.simplifymypantry.pantry.presentation.PantryViewModel
@@ -27,29 +37,67 @@ import com.example.simplifymypantry.recipe.presentation.RecipeDetailScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeDetailViewModel
 import com.example.simplifymypantry.recipe.presentation.RecipeScreen
 import com.example.simplifymypantry.recipe.presentation.RecipeScreenViewModel
-
+import com.example.simplifymypantry.account.data.SessionManager
+import com.example.simplifymypantry.pantry.data.PantryDatabase
+import com.example.simplifymypantry.scanner.data.ImageSaver
+import com.example.simplifymypantry.scanner.data.OpenFoodFactsAPI
+import com.example.simplifymypantry.scanner.data.PantryItemCache
+import com.example.simplifymypantry.scanner.data.Scanner
+import com.example.simplifymypantry.scanner.presentation.ScannerScreen
+import com.example.simplifymypantry.scanner.presentation.ScannerScreenViewModel
 
 @Composable
-fun App() {
+fun App(
+    database: PantryDatabase,
+    accountDatabase: AccountDatabase,
+    scannerDatabase: PantryItemCache,
+    scanner: Scanner,
+    imageSaver: ImageSaver
+){
+    // Properties might not be generated yet if sync is incomplete, but these are standard names
+    val queries = database.pantryDatabaseQueries
+
     MaterialTheme(
         colorScheme = LightColors,
         typography = customTypography,
         shapes = customShapes
     ){
-        // We create this here so it's shared between the List and Create screens
+        val pantryViewModel = viewModel { PantryViewModel(queries) }
         val sharedRecipeViewModel = viewModel<RecipeScreenViewModel>()
         val navController = rememberNavController()
-        val pantryViewModel = viewModel<PantryViewModel>()
+
+        val openFoodFactsApi = remember { OpenFoodFactsAPI() }
+        val scannerScreenViewModel = viewModel {
+            ScannerScreenViewModel(scanner, openFoodFactsApi, scannerDatabase, imageSaver)
+        }
+        
+        val sessionManager = remember { SessionManager(accountDatabase)}
+
+        val apiService = remember { AccountApiService() }
+        val repository = remember { AccountRepository(apiService) }
+        val editUserUseCase = remember { EditUserUseCase(repository) }
+        val registerUserUseCase = remember { RegisterUserUseCase(repository) }
+        val getUserUseCase = remember { GetUserUseCase(repository) }
+        val deleteUserUseCase = remember { DeleteUserUseCase(repository) }
+        val loginUserUseCase = remember { LoginUserUseCase(repository) }
+
+        val session = sessionManager.getSession()
+
+        val startDestination = if (session != null) {
+            Route.HomeScreen
+        } else {
+            Route.LoginPage
+        }
 
         NavHost(
             navController = navController,
             startDestination = Route.AppGraph
         ) {
              navigation<Route.AppGraph>(
-                 startDestination = Route.LoginPage
+                 startDestination = startDestination
              ){
                  composable<Route.LoginPage>{
-                     val loginViewModel = viewModel<LoginViewModel>()
+                     val loginViewModel = viewModel { LoginViewModel(loginUserUseCase, sessionManager) }
                      LoginScreen(
                          viewModel = loginViewModel,
                          onCreateAccount = { navController.navigate(Route.CreateAccount) },
@@ -58,7 +106,7 @@ fun App() {
                  }
 
                  composable<Route.CreateAccount>{
-                    val createAccountViewModel = viewModel<CreateAccountViewModel>()
+                    val createAccountViewModel = viewModel { CreateAccountViewModel(registerUserUseCase, sessionManager)}
                      CreateAccount(
                          viewModel = createAccountViewModel,
                          onSignIn = { navController.navigate(Route.LoginPage) },
@@ -78,15 +126,15 @@ fun App() {
                  }
 
                  composable<Route.ViewAccount>{
-                     val viewAccountViewModel = viewModel<ViewAccountViewModel>()
+                     val viewAccountViewModel = viewModel { ViewAccountViewModel(deleteUserUseCase, editUserUseCase, getUserUseCase, sessionManager) }
                      ViewAccount(
                          viewModel = viewAccountViewModel,
-                         navController = navController
+                         navController = navController,
+                         token = "tempToken"
                      )
                  }
 
                  composable<Route.CreateRecipe>{
-                     // Pass the shared viewModel so we can add the recipe to the list
                      val createRecipeViewModel = viewModel {
                          CreateRecipeScreenViewModel(sharedRecipeViewModel)
                      }
@@ -100,24 +148,41 @@ fun App() {
                      RecipeScreen(
                          onCreateRecipeClick = { navController.navigate(Route.CreateRecipe) },
                          viewModel = sharedRecipeViewModel,
+                         pantryViewModel = pantryViewModel,
                          navController = navController
                      )
                  }
 
                  composable<Route.RecipeDetails>{ backStackEntry -> 
                      val route : Route.RecipeDetails = backStackEntry.toRoute()
-                     val recipeViewModel = viewModel {
+                     val recipeDetailViewModel = viewModel {
                          RecipeDetailViewModel(route.recipeId, sharedRecipeViewModel)
                      }
 
                      RecipeDetailScreen(
-                         viewModel = recipeViewModel,
+                         viewModel = recipeDetailViewModel,
+                         navController = navController
+                     )
+                 }
+
+                 composable<Route.Household>{
+                     val householdViewModel = viewModel<HouseholdViewModel>()
+                     HouseholdScreen(
+                         viewModel = householdViewModel,
                          navController = navController
                      )
                  }
 
                  composable<Route.Pantry> {
-                     PantryScreen(viewModel = pantryViewModel)
+                     PantryScreen(viewModel = pantryViewModel, navController = navController)
+                 }
+
+                 composable<Route.Scanner> {
+
+                     ScannerScreen(
+                         viewModel = scannerScreenViewModel,
+                         returnHome = { navController.navigate(Route.HomeScreen) }
+                     )
                  }
              }
         }

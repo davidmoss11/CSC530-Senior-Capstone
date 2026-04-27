@@ -44,10 +44,13 @@ import org.jetbrains.compose.resources.painterResource
 import simplifymypantry.composeapp.generated.resources.close_24px
 
 @Composable
-@Preview
 fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip: () -> Unit){
 
     var passwordVisible by remember { mutableStateOf(false)}
+
+    if (viewModel.isLoggedIn and !viewModel.showDialog) {
+        onSkip()
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -69,7 +72,7 @@ fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip:
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
-                text = "Username",
+                text = "Username or Email",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )

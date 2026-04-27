@@ -34,4 +34,7 @@ sealed interface Route {
 
     @Serializable
     data object ViewAccount: Route
+
+    @Serializable
+    data object Household: Route
 }
