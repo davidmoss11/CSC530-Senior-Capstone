@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import com.example.simplifymypantry.account.presentation.ViewAccountViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.Switch
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -121,6 +123,21 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController)
                                 Text(text = "Change Email")
                             }
                         }
+                    }
+
+                    // Notification Toggle
+                    Row(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Expiring Food Notifications", style = MaterialTheme.typography.bodySmall)
+                        Switch(
+                            checked = viewModel.pushNotificationsEnabled,
+                            onCheckedChange = { viewModel.pushNotificationsEnabled = it }
+                        )
                     }
 
                     Button(modifier = Modifier
