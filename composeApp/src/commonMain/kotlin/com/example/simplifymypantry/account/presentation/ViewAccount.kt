@@ -196,7 +196,6 @@ fun ViewAccount(viewModel : ViewAccountViewModel, navController : NavController,
                     Text( text = "Account not Logged In")
                     Button(
                         modifier = Modifier
-                        Button(modifier = Modifier
                             .width(180.dp),
                             onClick = { viewModel.editPassword()}
                         ) {
