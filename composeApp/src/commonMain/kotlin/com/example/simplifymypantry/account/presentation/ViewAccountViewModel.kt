@@ -11,8 +11,7 @@ import com.example.simplifymypantry.account.data.EditUserUseCase
 import com.example.simplifymypantry.account.data.GetUserUseCase
 import com.example.simplifymypantry.account.data.SessionManager
 import kotlinx.coroutines.launch
-
-
+    
 class ViewAccountViewModel(
     private val deleteUserUseCase : DeleteUserUseCase,
     private val editUserUseCase : EditUserUseCase,
@@ -25,7 +24,7 @@ class ViewAccountViewModel(
     var email by mutableStateOf<String?>(null)
     var password by mutableStateOf("")
     var token by mutableStateOf("")
-
+    var pushNotificationsEnabled by mutableStateOf(false)
     var changedUsername by mutableStateOf<String?>(null)
     var changedEmail by mutableStateOf<String?>(null)
     var changedPassword by mutableStateOf<String?>(null)
