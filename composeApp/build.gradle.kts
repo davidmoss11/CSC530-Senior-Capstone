@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 
@@ -46,6 +47,15 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.sqldelight.android.driver)
+            implementation(libs.mlkit.barcode)
+
+            implementation(libs.camerax.core)
+            implementation(libs.camerax.camera2)
+            implementation(libs.camerax.lifecycle)
+            implementation(libs.camerax.view)
+            implementation(libs.accompanist.permissions)
+            implementation(libs.ktor.client.android)
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
@@ -59,10 +69,18 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
+            //implementation(libs.datastore)
 
             implementation(libs.ktor.clientCore)
-            implementation(libs.ktor.clientJson)
-            implementation(libs.ktor.clientSerial)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.clientContentNegotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kermit.logging)
+            implementation(libs.settings)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.coil.compose)
+            implementation(libs.coil3.network.ktor3)
 
         }
         commonTest.dependencies {
@@ -71,7 +89,14 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.sqldelight.sqlite.driver)
         }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        // Since iosArm64 and iosSimulatorArm64 are defined, we use their shared source set or specific ones
+        // Usually, there is an 'iosMain' created by convention if you define ios targets
     }
 }
 
@@ -99,6 +124,23 @@ kotlin {
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_11
             targetCompatibility = JavaVersion.VERSION_11
+        }
+    }
+
+    sqldelight {
+        databases {
+            create("PantryDatabase") {
+                packageName.set("com.example.simplifymypantry.pantry.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/Pantry")
+            }
+            create("AccountDatabase") {
+                packageName.set("com.example.simplifymypantry.account.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/Account")
+            }
+            create("PantryItemCache") {
+                packageName.set("com.example.simplifymypantry.scanner.data")
+                srcDirs.setFrom("src/commonMain/sqldelight/PantryAPICache")
+            }
         }
     }
 

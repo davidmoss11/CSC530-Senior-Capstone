@@ -1,0 +1,67 @@
+CREATE TABLE pantryItemEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    productType TEXT,
+    productName TEXT NOT NULL,
+    productQuantity REAL,
+    productQuantityUnit TEXT,
+    quantity TEXT,
+    foodGroups TEXT,
+    brandsTags TEXT,
+    categoriesTags TEXT,
+    labelsTags TEXT,
+    allergensTags TEXT,
+    allergensFromIngredients TEXT,
+    expirationDate TEXT,
+    selectedImages TEXT,
+    ingredients TEXT,
+    nutriments TEXT,
+    notes TEXT
+);
+
+getAllItems:
+SELECT * FROM pantryItemEntity;
+
+insertItem:
+INSERT INTO pantryItemEntity(
+    productType,
+    productName,
+    productQuantity,
+    productQuantityUnit,
+    quantity,
+    foodGroups,
+    brandsTags,
+    categoriesTags,
+    labelsTags,
+    allergensTags,
+    allergensFromIngredients,
+    expirationDate,
+    selectedImages,
+    ingredients,
+    nutriments,
+    notes
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateItem:
+UPDATE pantryItemEntity
+SET
+    productType = ?,
+    productName = ?,
+    productQuantity = ?,
+    productQuantityUnit = ?,
+    quantity = ?,
+    foodGroups = ?,
+    brandsTags = ?,
+    categoriesTags = ?,
+    labelsTags = ?,
+    allergensTags = ?,
+    allergensFromIngredients = ?,
+    expirationDate = ?,
+    selectedImages = ?,
+    ingredients = ?,
+    nutriments = ?,
+    notes = ?
+WHERE id = ?;
+
+deleteItem:
+DELETE FROM pantryItemEntity WHERE id = ?;
