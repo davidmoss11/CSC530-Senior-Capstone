@@ -20,7 +20,7 @@ class AccountApiService{
         }
     }
 
-    private val base_url = "http://10.0.2.2:8080/api"
+    private val base_url = "http://10.55.82.98:8080/api"
 
     suspend fun registerUser(
         username: String,

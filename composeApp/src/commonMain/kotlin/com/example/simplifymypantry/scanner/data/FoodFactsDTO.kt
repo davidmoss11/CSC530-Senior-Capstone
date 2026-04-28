@@ -1,5 +1,6 @@
 package com.example.simplifymypantry.scanner.data
 
+import com.example.simplifymypantry.pantry.domain.PantryItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -131,5 +132,25 @@ fun ScannerItemEntity.toProductResponse(): ProductResponse {
                 Json.decodeFromString(it)
             }
         )
+    )
+}
+
+fun Product.toPantryItem(): PantryItem {
+    return PantryItem(
+        productType = productType,
+        productName = productName,
+        productQuantity = productQuantity,
+        productQuantityUnit = productQuantityUnit,
+        quantity = quantity,
+        foodGroups = foodGroups,
+        brandsTags = brandsTags,
+        categoriesTags = categoriesTags,
+        labelsTags = labelsTags,
+        selectedImages = selectedImages,
+        allergensTags = allergensTags,
+        ingredients = ingredients,
+        nutriments = nutriments,
+        allergensFromIngredients = allergensFromIngredients,
+        expirationDate = expirationDate
     )
 }

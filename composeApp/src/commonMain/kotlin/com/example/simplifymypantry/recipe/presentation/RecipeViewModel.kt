@@ -54,9 +54,9 @@ class RecipeViewModel : ViewModel() {
             val matchesRating = recipe.rating >= rating
             
             val matchesPantry = if (onlyPantry) {
-                val pantryNames = pantryItems.map { it.name.lowercase() }
+                val pantryNames = pantryItems.map { it.productName?.lowercase() }
                 recipe.ingredients.all { ingredient -> 
-                    pantryNames.any { it.contains(ingredient.lowercase()) }
+                    pantryNames.any { it?.contains(ingredient.lowercase()) == null }
                 }
             } else true
 
