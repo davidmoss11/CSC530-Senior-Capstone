@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.simplifymypantry.scanner.data.Scanner
 import kotlinx.coroutines.launch
 import co.touchlab.kermit.Logger
+import com.example.simplifymypantry.pantry.data.PantryDatabase
+import com.example.simplifymypantry.pantry.domain.PantryItem
 import com.example.simplifymypantry.scanner.data.ImageSaver
 import com.example.simplifymypantry.scanner.data.OpenFoodFactsAPI
 import com.example.simplifymypantry.scanner.data.PantryItemCache
@@ -19,11 +21,13 @@ import com.example.simplifymypantry.scanner.data.toScannerEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.readRawBytes
+import kotlinx.serialization.json.Json
 
 class ScannerScreenViewModel(
     val scanner: Scanner,
     val api: OpenFoodFactsAPI,
     val scannerDatabase: PantryItemCache,
+    val pantryDatabase: PantryDatabase,
     val imageSaver: ImageSaver
 ) : ViewModel() {
 
@@ -38,8 +42,11 @@ class ScannerScreenViewModel(
     var result by mutableStateOf<ProductResponse?>(null)
 
     var popupDialog by mutableStateOf(false)
+    var saveDialog by mutableStateOf(false)
 
     var localImagePath by mutableStateOf<String?>(null)
+
+    var pendingPantryItem by mutableStateOf<PantryItem?>(null)
 
     val displayImagePath: String?
         get() = localImagePath ?: result?.product?.selectedImages?.front?.display?.values?.firstOrNull()
@@ -134,7 +141,26 @@ class ScannerScreenViewModel(
                     } catch (e: Exception) {
                         log.e("Insert failed: ${e.message} ${e.cause}")
                     }
-                    saveItemDialog()
+                    pendingPantryItem = result?.product?.let { p ->
+                        PantryItem(
+                            productName = p.productName,
+                            productType = p.productType,
+                            productQuantity = p.productQuantity,
+                            productQuantityUnit = p.productQuantityUnit,
+                            quantity = product.quantity,
+                            foodGroups = p.foodGroups,
+                            brandsTags = p.brandsTags,
+                            categoriesTags = p.categoriesTags,
+                            labelsTags = p.labelsTags,
+                            allergensTags = p.allergensTags,
+                            allergensFromIngredients = p.allergensFromIngredients,
+                            expirationDate = p.expirationDate,
+                            selectedImages = p.selectedImages,
+                            ingredients = p.ingredients,
+                            nutriments = p.nutriments
+                        )
+                    }
+                    saveDialog = true
                     cache = null
                     result = null
                     fromCache = false
@@ -142,11 +168,33 @@ class ScannerScreenViewModel(
                 }
             }
         } else {
-            saveItemDialog()
+            pendingPantryItem = cache?.let {
+                PantryItem(
+                    productName = it.productName,
+                    productType = it.productType,
+                    productQuantity = it.productQuantity,
+                    productQuantityUnit = it.productQuantityUnit,
+                    quantity = it.quantity,
+                    foodGroups = it.foodGroups,
+                    brandsTags = it.brandsTags?.split(",")?.filter { s -> s.isNotBlank() },
+                    categoriesTags = it.categoriesTags?.split(",")?.filter { s -> s.isNotBlank() },
+                    labelsTags = it.labelsTags?.split(",")?.filter { s -> s.isNotBlank() },
+                    allergensTags = it.allergensTags?.split(",")?.filter { s -> s.isNotBlank() },
+                    allergensFromIngredients = it.allergensFromIngredients,
+                    expirationDate = it.expirationDate
+                )
+            }
             cache = null
             result = null
             fromCache = false
         }
+    }
+
+    fun dismissSaveItem() {
+        saveDialog = false
+        pendingPantryItem = null
+        localImagePath = null
+        start()
     }
     fun dismissDialog() {
         popupDialog = false
@@ -187,7 +235,31 @@ class ScannerScreenViewModel(
         client.close()
     }
 
-    fun saveItemDialog() {
-
+    fun confirmSaveItem(item: PantryItem?) {
+        saveDialog = false
+        pendingPantryItem = null
+        localImagePath = null
+        viewModelScope.launch {
+            pantryDatabase.pantryDatabaseQueries.insertItem(
+                productType = item?.productType,
+                productName = item?.productName ?: return@launch,
+                productQuantity = item.productQuantity,
+                productQuantityUnit = item.productQuantityUnit,
+                quantity = item.quantity,
+                foodGroups = item.foodGroups,
+                brandsTags = item.brandsTags?.joinToString(","),
+                categoriesTags = item.categoriesTags?.joinToString(","),
+                labelsTags = item.labelsTags?.joinToString(","),
+                allergensTags = item.allergensTags?.joinToString(","),
+                allergensFromIngredients = item.allergensFromIngredients,
+                expirationDate = item.expirationDate,
+                selectedImages = item.selectedImages?.let { Json.encodeToString(it) },
+                ingredients = item.ingredients?.let { Json.encodeToString(it) },
+                nutriments = item.nutriments?.let { Json.encodeToString(it) },
+                notes = item.notes ?: ""
+            )
+            log.d("Saved to pantry: ${item.productName}")
+        }
+        start()
     }
 }

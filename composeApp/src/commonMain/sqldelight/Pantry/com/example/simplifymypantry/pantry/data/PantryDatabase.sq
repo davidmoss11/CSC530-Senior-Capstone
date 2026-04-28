@@ -1,23 +1,66 @@
 CREATE TABLE pantryItemEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    quantity TEXT NOT NULL,
-    category TEXT NOT NULL,
-    expirationDate TEXT NOT NULL,
-    dietInfo TEXT NOT NULL,
-    notes TEXT NOT NULL
+    productType TEXT,
+    productName TEXT NOT NULL,
+    productQuantity REAL,
+    productQuantityUnit TEXT,
+    quantity TEXT,
+    foodGroups TEXT,
+    brandsTags TEXT,
+    categoriesTags TEXT,
+    labelsTags TEXT,
+    allergensTags TEXT,
+    allergensFromIngredients TEXT,
+    expirationDate TEXT,
+    selectedImages TEXT,
+    ingredients TEXT,
+    nutriments TEXT,
+    notes TEXT
 );
 
 getAllItems:
 SELECT * FROM pantryItemEntity;
 
 insertItem:
-INSERT OR REPLACE INTO pantryItemEntity(name, quantity, category, expirationDate, dietInfo, notes)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO pantryItemEntity(
+    productType,
+    productName,
+    productQuantity,
+    productQuantityUnit,
+    quantity,
+    foodGroups,
+    brandsTags,
+    categoriesTags,
+    labelsTags,
+    allergensTags,
+    allergensFromIngredients,
+    expirationDate,
+    selectedImages,
+    ingredients,
+    nutriments,
+    notes
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateItem:
 UPDATE pantryItemEntity
-SET name = ?, quantity = ?, category = ?, expirationDate = ?, dietInfo = ?, notes = ?
+SET
+    productType = ?,
+    productName = ?,
+    productQuantity = ?,
+    productQuantityUnit = ?,
+    quantity = ?,
+    foodGroups = ?,
+    brandsTags = ?,
+    categoriesTags = ?,
+    labelsTags = ?,
+    allergensTags = ?,
+    allergensFromIngredients = ?,
+    expirationDate = ?,
+    selectedImages = ?,
+    ingredients = ?,
+    nutriments = ?,
+    notes = ?
 WHERE id = ?;
 
 deleteItem:

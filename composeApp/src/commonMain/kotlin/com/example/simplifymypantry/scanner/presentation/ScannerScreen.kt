@@ -33,6 +33,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.example.simplifymypantry.pantry.presentation.PantryItemDialog
 import org.jetbrains.compose.resources.painterResource
 import simplifymypantry.composeapp.generated.resources.Res
 import simplifymypantry.composeapp.generated.resources.close_24px
@@ -165,6 +166,17 @@ fun ScannerScreen(viewModel: ScannerScreenViewModel, returnHome: () -> Unit){
                     }
                 }
             )
+        }
+
+        if (viewModel.saveDialog){
+            viewModel.pendingPantryItem?.let { item ->
+                PantryItemDialog(
+                    title = "Add to Pantry?",
+                    initialItem = item,
+                    onDismiss = { viewModel.dismissSaveItem() },
+                    onConfirm = { updatedItem -> viewModel.confirmSaveItem(updatedItem) }
+                )
+            }
         }
 
     }

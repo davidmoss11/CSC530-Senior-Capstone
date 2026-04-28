@@ -7,7 +7,6 @@ import com.example.simplifymypantry.pantry.domain.PantryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 
 data class RecipeMatch(
     val recipe: Recipe,
@@ -51,11 +50,11 @@ class RecipeScreenViewModel : ViewModel() {
         val rating = args[5] as Double
         val onlyPantry = args[6] as Boolean
 
-        val pantryNames = pantryItems.map { it.name.lowercase() }
+        val pantryNames = pantryItems.map { it.productName?.lowercase() }
 
         recipes.map { recipe ->
             val missing = recipe.ingredients.filter { ingredient ->
-                pantryNames.none { it.contains(ingredient.lowercase()) || ingredient.lowercase().contains(it) }
+                pantryNames.none { it?.contains(ingredient.lowercase()) == true || it?.let { other -> ingredient.lowercase().contains(other) } == true }
             }
             RecipeMatch(recipe, missing)
         }.filter { match ->

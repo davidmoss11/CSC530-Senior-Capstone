@@ -45,5 +45,8 @@ val LightColors = lightColorScheme(
     onTertiary = tealBlue,
     background = darkGreen,
     onPrimaryContainer = darkGreen30w,
-    onSecondaryContainer = darkGreen10b
+    onSecondaryContainer = darkGreen10b,
+    surface = white,
+    onSurface = black,
+    onSurfaceVariant = black
 )
