@@ -14,7 +14,6 @@ import com.example.simplifymypantry.util.SimpleJWT
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.contentnegotiation.*
-import jdk.jfr.internal.jfc.model.SettingsLog.enable
 import org.koin.ktor.plugin.koin
 import org.koin.ktor.ext.inject
 import org.koin.dsl.module
@@ -66,4 +65,3 @@ fun Application.module() {
         api(simpleJWT)
     }
 }
-

@@ -1,15 +1,18 @@
 package com.example.simplifymypantry.pantry.presentation
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.simplifymypantry.core.HamburgerMenu
@@ -28,7 +31,13 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Pantry") },
+                title = { 
+                    Text(
+                        "My Pantry",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 navigationIcon = { HamburgerMenu(navController) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -40,29 +49,48 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddDialog = true },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Text("+")
+                Text("+", style = MaterialTheme.typography.headlineSmall)
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            TextField(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 16.dp)
+        ) {
+            OutlinedTextField(
                 value = filterQuery,
                 onValueChange = { viewModel.updateFilter(it) },
-                label = { Text("Filter by name, category, or diet", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                label = { Text("Search your pantry...", color = Color.Black) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                shape = MaterialTheme.shapes.medium,
+                textStyle = TextStyle(color = Color.Black),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray
+                )
             )
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 items(filteredItems) { item ->
                     Card(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraLarge,
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -70,19 +98,29 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(item.name, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                if (item.quantity.isNotBlank()) Text("Qty: ${item.quantity}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                if (item.category.isNotBlank()) Text("Category: ${item.category}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                if (item.expirationDate.isNotBlank()) Text("Expires: ${item.expirationDate}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                if (item.dietInfo.isNotBlank()) Text("Diet: ${item.dietInfo}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                if (item.notes.isNotBlank()) Text("Notes: ${item.notes}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    text = item.name,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                if (item.quantity.isNotBlank()) Text("Qty: ${item.quantity}", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
+                                if (item.category.isNotBlank()) Text("Category: ${item.category}", style = MaterialTheme.typography.bodySmall, color = Color.Black)
+                                if (item.expirationDate.isNotBlank()) {
+                                    Text(
+                                        "Expires: ${item.expirationDate}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
                             }
                             Column {
                                 TextButton(onClick = { itemToEdit = item }) {
-                                    Text("Edit", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("Edit", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                 }
                                 TextButton(onClick = { itemToDelete = item }) {
-                                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                                    Text("Delete", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                                 }
                             }
                         }
@@ -94,7 +132,7 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
 
     if (showAddDialog) {
         PantryItemDialog(
-            title = "Add Pantry Item",
+            title = "Add Item",
             onDismiss = { showAddDialog = false },
             onConfirm = { name, qty, cat, exp, diet, notes ->
                 viewModel.addItem(name, qty, cat, exp, diet, notes)
@@ -104,7 +142,7 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
 
     itemToEdit?.let { item ->
         PantryItemDialog(
-            title = "Edit Pantry Item",
+            title = "Edit Item",
             initialItem = item,
             onDismiss = { itemToEdit = null },
             onConfirm = { name, qty, cat, exp, diet, notes ->
@@ -116,19 +154,19 @@ fun PantryScreen(viewModel: PantryViewModel, navController: NavController) {
     itemToDelete?.let { item ->
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("Delete Item", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-            text = { Text("Are you sure you want to delete '${item.name}'?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            title = { Text("Delete Item?", color = Color.Black) },
+            text = { Text("Are you sure you want to remove ${item.name} from your pantry?", color = Color.Black) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteItem(item.id.toLong())
                     itemToDelete = null
                 }) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text("Remove", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { itemToDelete = null }) {
-                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Cancel", color = Color.Gray)
                 }
             }
         )
@@ -146,36 +184,76 @@ fun PantryItemDialog(
     var quantity by remember { mutableStateOf(initialItem?.quantity ?: "") }
     var category by remember { mutableStateOf(initialItem?.category ?: "") }
     var expiry by remember { mutableStateOf(initialItem?.expirationDate ?: "") }
-    var diet by remember { mutableStateOf(initialItem?.dietInfo ?: "") }
-    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = { Text(title, fontWeight = FontWeight.Bold, color = Color.Black) },
         text = {
-            Column {
-                TextField(value = name, onValueChange = { name = it }, label = { Text("Name (Required)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
-                TextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (Optional)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
-                TextField(value = category, onValueChange = { category = it }, label = { Text("Category (Optional)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
-                TextField(value = expiry, onValueChange = { expiry = it }, label = { Text("Expiry (Optional)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
-                TextField(value = diet, onValueChange = { diet = it }, label = { Text("Diet Info (Optional)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
-                TextField(value = notes, onValueChange = { notes = it }, label = { Text("Notes (Optional)", color = MaterialTheme.colorScheme.onSurfaceVariant) })
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = name, 
+                    onValueChange = { name = it }, 
+                    label = { Text("Name", color = Color.Black) }, 
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black, 
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                OutlinedTextField(
+                    value = quantity, 
+                    onValueChange = { quantity = it }, 
+                    label = { Text("Quantity", color = Color.Black) }, 
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black, 
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                OutlinedTextField(
+                    value = category, 
+                    onValueChange = { category = it }, 
+                    label = { Text("Category", color = Color.Black) }, 
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black, 
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                OutlinedTextField(
+                    value = expiry, 
+                    onValueChange = { expiry = it }, 
+                    label = { Text("Expiry Date", color = Color.Black) }, 
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black, 
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    )
+                )
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    onConfirm(name, quantity, category, expiry, diet, notes)
+                    onConfirm(name, quantity, category, expiry, "", "")
                     onDismiss()
                 },
                 enabled = name.isNotBlank()
             ) {
-                Text(if (initialItem == null) "Add" else "Save", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(if (initialItem == null) "Add" else "Save")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Cancel", color = Color.Gray)
             }
         }
     )

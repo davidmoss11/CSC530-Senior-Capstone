@@ -18,26 +18,25 @@ import com.example.simplifymypantry.scanner.data.createScannerDatabase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-        val driverFactory = DriverFactory(applicationContext)
-        val accountDriver = AccountDriver(applicationContext)
-        val scannerDriver = ScannerDriver(applicationContext)
-        val scanner = AndroidScanner(applicationContext, this@MainActivity )
-        val imageSaver = AndroidImageSaver(applicationContext)
+        try {
+            val driverFactory = DriverFactory(applicationContext)
+            val accountDriver = AccountDriver(applicationContext)
+            val scannerDriver = ScannerDriver(applicationContext)
+            val scanner = AndroidScanner(applicationContext, this@MainActivity )
+            val imageSaver = AndroidImageSaver(applicationContext)
 
-        val database = createDatabase(driverFactory)
-        val accountDatabase = createAccountDatabase(accountDriver)
-        val scannerDatabase = createScannerDatabase(scannerDriver)
+            val database = createDatabase(driverFactory)
+            val accountDatabase = createAccountDatabase(accountDriver)
+            val scannerDatabase = createScannerDatabase(scannerDriver)
 
-        setContent {
-            App(database, accountDatabase, scannerDatabase, scanner, imageSaver)
+            setContent {
+                App(database, accountDatabase, scannerDatabase, scanner, imageSaver)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
 }

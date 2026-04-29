@@ -5,34 +5,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import org.jetbrains.compose.resources.painterResource
 import simplifymypantry.composeapp.generated.resources.Res
 import simplifymypantry.composeapp.generated.resources.close_24px
@@ -42,250 +33,178 @@ import co.touchlab.kermit.Logger
 
 @Composable
 fun CreateAccount(viewModel: CreateAccountViewModel, onSignIn: () -> Unit, onSkip: () -> Unit){
-
     val log = Logger.withTag("CreateAccountUI")
     var passwordVisible by remember { mutableStateOf(false) }
 
     if(viewModel.isSuccessful){
-        onSkip()
+        LaunchedEffect(Unit) {
+            onSkip()
+        }
     }
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Scaffold(
+        topBar = {
+            Box(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.TopEnd).size(40.dp),
+                    onClick = onSkip,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) {
+                    Icon(painterResource(Res.drawable.close_24px), contentDescription = "Close")
+                }
+            }
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.background)
-                .fillMaxWidth(1f)
-                .fillMaxHeight(1f),
-            verticalArrangement = Arrangement.spacedBy(
-                space = 15.dp,
-                alignment = Alignment.CenterVertically
-            ),
+                .fillMaxSize()
+                .padding(padding)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 30.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Text(
-                text = "Create an Account",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "Join SimplifyMyPantry",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+
             Text(
-                text = "Username",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "Start managing your kitchen today",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Black.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = 24.dp)
             )
-            TextField(
+
+            OutlinedTextField(
                 value = viewModel.username,
-                onValueChange = { newText: String ->
-                    viewModel.username = newText
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = "Enter Text...",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
+                onValueChange = { viewModel.username = it },
+                label = { Text("Username", color = Color.Black) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = TextStyle(color = Color.Black),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    cursorColor = Color.Black
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = viewModel.email,
+                onValueChange = { viewModel.email = it },
+                label = { Text("Email Address", color = Color.Black) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = TextStyle(color = Color.Black),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    cursorColor = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = viewModel.password,
+                onValueChange = { viewModel.password = it },
+                label = { Text("Password", color = Color.Black) },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            painter = painterResource(if (passwordVisible) Res.drawable.visibility_24px else Res.drawable.visibility_off_24px),
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
                 },
                 shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = TextStyle(color = Color.Black),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    cursorColor = Color.Black
+                )
             )
-            Text(
-                text = "Email Address",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            TextField(
-                value = viewModel.email,
-                onValueChange = {newText: String ->
-                    viewModel.email = newText
 
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = "Enter Text...",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                },
-                shape = MaterialTheme.shapes.medium
-            )
-            Text(
-                text = "Password",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            TextField(
-                value = viewModel.password,
-                onValueChange = { newText : String ->
-                    viewModel.password = newText
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = "Enter Text...",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                },
-                visualTransformation = if (passwordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
-                },
-                trailingIcon = {
-                    IconButton(onClick = {passwordVisible = !passwordVisible }) {
-                        Icon(
-                            painter = painterResource(
-                                if (passwordVisible) Res.drawable.visibility_24px
-                                else Res.drawable.visibility_off_24px
-                            ),
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                shape = MaterialTheme.shapes.medium
-            )
-            Text(
-                text = "Confirm Password",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            TextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = viewModel.confirmPassword,
-                onValueChange = { newText : String ->
-                    viewModel.confirmPassword = newText
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = "Enter Text...",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                },
-                visualTransformation = if (passwordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
-                },
-                trailingIcon = {
-                    IconButton(onClick = {passwordVisible = !passwordVisible }) {
-                        Icon(
-                            painter = painterResource(
-                                if (passwordVisible) Res.drawable.visibility_24px
-                                else Res.drawable.visibility_off_24px
-                            ),
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                shape = MaterialTheme.shapes.medium
+                onValueChange = { viewModel.confirmPassword = it },
+                label = { Text("Confirm Password", color = Color.Black) },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = TextStyle(color = Color.Black),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    cursorColor = Color.Black
+                )
             )
-            Button(
-                modifier = Modifier
-                    .width(120.dp)
-                    .height(60.dp),
-                onClick = {
-                    log.d{"clicked"}
-                    viewModel.createAccountClicked() },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Text(
-                    text = "Create Account",
-                    style = MaterialTheme.typography.titleSmall,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Button(
-                modifier = Modifier
-                    .width(120.dp)
-                    .height(60.dp),
-                onClick =  onSignIn ,
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Text(
-                    text = "Sign In",
-                    style = MaterialTheme.typography.titleSmall,
-                    textAlign = TextAlign.Center,
-                )
-            }
 
-        }
+            Spacer(modifier = Modifier.height(32.dp))
 
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(
-                    top = 20.dp,
-                    end = 10.dp,
-                    start = 0.dp,
-                    bottom = 0.dp
-                )
-                .size(40.dp),
-            onClick =  onSkip ,
-            colors = IconButtonColors(
-                containerColor = MaterialTheme.colorScheme.onTertiary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContentColor = MaterialTheme.colorScheme.tertiary,
-                disabledContainerColor = MaterialTheme.colorScheme.onPrimary
-            ),
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.close_24px),
-                contentDescription = "Close"
-            )
+            if (viewModel.isLoading) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            } else {
+                Button(
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    onClick = { viewModel.createAccountClicked() },
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("Create Account", style = MaterialTheme.typography.titleMedium, color = Color.White)
+                }
+
+                TextButton(onClick = onSignIn, modifier = Modifier.padding(top = 12.dp)) {
+                    Text("Already have an account? Sign In", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 
     if(viewModel.showDialog){
         AlertDialog(
-            onDismissRequest = {
-                if (viewModel.dialogMessage == "Account Creation Successful") {
-                    onSkip()
-                }
-                viewModel.showDialog = false
-                viewModel.dialogMessage = ""
-
-            },
-            title = {Text(
-                text = "Important",
-                color = MaterialTheme.colorScheme.onSecondary
-            )},
-            text = {Text(
-                text = viewModel.dialogMessage,
-                color = MaterialTheme.colorScheme.onSecondary)},
+            onDismissRequest = { viewModel.showDialog = false },
+            title = { Text("Notice", color = Color.Black) },
+            text = { Text(viewModel.dialogMessage, color = Color.Black) },
             confirmButton = {
-                Button(
-                    onClick = { viewModel.showDialog = false }
-                ) {
-                    Text(
-                        text = "Dismiss",
-                        color = MaterialTheme.colorScheme.onSecondary)
+                TextButton(onClick = { viewModel.showDialog = false }) {
+                    Text("OK", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
-            },
+            }
         )
     }
 }

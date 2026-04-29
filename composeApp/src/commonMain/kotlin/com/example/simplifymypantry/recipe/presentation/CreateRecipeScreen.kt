@@ -1,31 +1,16 @@
 package com.example.simplifymypantry.recipe.presentation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.Switch
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.simplifymypantry.core.HamburgerMenu
 
@@ -35,8 +20,8 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
     if (viewModel.showDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.showDialog = false },
-            title = { Text("Recipe Status") },
-            text = { Text(viewModel.dialogMessage) },
+            title = { Text("Recipe Status", color = Color.Black) },
+            text = { Text(viewModel.dialogMessage, color = Color.Black) },
             confirmButton = {
                 TextButton(onClick = { 
                     viewModel.showDialog = false
@@ -44,7 +29,7 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                         navController.popBackStack()
                     }
                 }) {
-                    Text("OK")
+                    Text("OK", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
             }
         )
@@ -57,18 +42,16 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     Text(
                         text = "Create Recipe",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
                     HamburgerMenu(navController)
                 },
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -82,32 +65,36 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Recipe Name",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                TextField(
+                OutlinedTextField(
                     value = viewModel.recipeName,
                     onValueChange = { viewModel.recipeName = it },
-                    placeholder = { Text("Enter recipe name...", color = MaterialTheme.colorScheme.onSecondary) },
+                    label = { Text("Recipe Name", color = Color.Black) },
+                    placeholder = { Text("Enter recipe name...") },
                     shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(0.8f),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = if (viewModel.isPublic) "Public Recipe" else "Private Recipe",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
                     )
                     Switch(
                         checked = viewModel.isPublic,
@@ -115,51 +102,51 @@ fun CreateRecipeScreen(viewModel: CreateRecipeScreenViewModel, navController: Na
                     )
                 }
 
-                Text(
-                    text = "Ingredients",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                TextField(
+                OutlinedTextField(
                     value = viewModel.ingredients,
                     onValueChange = { viewModel.ingredients = it },
-                    placeholder = { Text("Enter ingredients...", color = MaterialTheme.colorScheme.onSecondary) },
+                    label = { Text("Ingredients", color = Color.Black) },
+                    placeholder = { Text("Enter ingredients...") },
                     shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(0.8f).height(120.dp),
-                    minLines = 3
+                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
 
-                Text(
-                    text = "Instructions" + if (viewModel.isPublic) " (Mandatory)" else " (Optional)",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                TextField(
+                OutlinedTextField(
                     value = viewModel.instructions,
                     onValueChange = { viewModel.instructions = it },
-                    placeholder = { Text("Enter instructions...", color = MaterialTheme.colorScheme.onSecondary) },
+                    label = { Text("Instructions" + if (viewModel.isPublic) " (Mandatory)" else " (Optional)", color = Color.Black) },
+                    placeholder = { Text("Enter instructions...") },
                     shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(0.8f).height(150.dp),
-                    minLines = 4
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    textStyle = TextStyle(color = Color.Black),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
 
                 Button(
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(60.dp)
+                        .fillMaxWidth()
+                        .height(56.dp)
                         .padding(top = 10.dp),
                     onClick = { viewModel.saveRecipeClicked() },
-                    colors = ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                        disabledContainerColor = MaterialTheme.colorScheme.secondary,
-                        disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                    ),
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = "Save Recipe",
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 }
             }

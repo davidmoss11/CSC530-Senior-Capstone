@@ -54,7 +54,6 @@ fun App(
     scanner: Scanner,
     imageSaver: ImageSaver
 ){
-    // Properties might not be generated yet if sync is incomplete, but these are standard names
     val queries = database.pantryDatabaseQueries
 
     MaterialTheme(
@@ -81,13 +80,9 @@ fun App(
         val deleteUserUseCase = remember { DeleteUserUseCase(repository) }
         val loginUserUseCase = remember { LoginUserUseCase(repository) }
 
-        val session = sessionManager.getSession()
-
-        val startDestination = if (session != null) {
-            Route.HomeScreen
-        } else {
-            Route.LoginPage
-        }
+        // Simplify session check to prevent freezing
+        val session = remember { sessionManager.getSession() }
+        val startDestination = if (session != null) Route.HomeScreen else Route.LoginPage
 
         NavHost(
             navController = navController,

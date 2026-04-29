@@ -2,6 +2,7 @@ package com.example.simplifymypantry.account.data
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -18,6 +19,11 @@ class AccountApiService{
         install(ContentNegotiation){
             json(Json{ ignoreUnknownKeys = true})
         }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 60000 // Increased to 60 seconds
+            connectTimeoutMillis = 60000
+            socketTimeoutMillis = 60000
+        }
     }
 
     private val base_url = "http://10.0.2.2:8080/api"
@@ -31,6 +37,9 @@ class AccountApiService{
         return client.post("$base_url/users"){
             contentType(ContentType.Application.Json)
             setBody(RegisterUserRequest(user = RegisterUserData(username, email, password)))
+            timeout {
+                requestTimeoutMillis = 60000
+            }
         }.body()
     }
 
@@ -64,7 +73,7 @@ class AccountApiService{
             contentType(ContentType.Application.Json)
             setBody(RegisterUserRequest(user = RegisterUserData(username, email, password)))
         }.body()
-    }//I know setBody says "Register", but they do the same function
+    }
 
     suspend fun editUser(
         token: String,

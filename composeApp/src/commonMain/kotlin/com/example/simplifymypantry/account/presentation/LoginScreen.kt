@@ -1,199 +1,163 @@
 package com.example.simplifymypantry.account.presentation
 
-
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import simplifymypantry.composeapp.generated.resources.Res
-import simplifymypantry.composeapp.generated.resources.textfield_placeholder
-import simplifymypantry.composeapp.generated.resources.visibility_24px
-import simplifymypantry.composeapp.generated.resources.visibility_off_24px
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
-import simplifymypantry.composeapp.generated.resources.close_24px
+import simplifymypantry.composeapp.generated.resources.*
 
 @Composable
 fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip: () -> Unit){
-
     var passwordVisible by remember { mutableStateOf(false)}
 
-    if (viewModel.isLoggedIn and !viewModel.showDialog) {
-        onSkip()
+    if (viewModel.isLoggedIn && !viewModel.showDialog) {
+        LaunchedEffect(Unit) {
+            onSkip()
+        }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF1B5E20),
+                        Color(0xFF388E3C)
+                    )
+                )
+            )
+    ) {
+        TextButton(
+            onClick = onSkip,
+            modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
+            colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+        ) {
+            Text("Skip", fontWeight = FontWeight.Bold)
+        }
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxWidth(1f)
-                .fillMaxHeight(1f),
-            verticalArrangement = Arrangement.spacedBy(
-                space = 15.dp,
-                alignment = Alignment.CenterVertically
-            ),
+                .fillMaxSize()
+                .padding(horizontal = 30.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //use Image to add logo here later
             Text(
-                text = "Sign In",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "Welcome to\nSimplifyMyPantry",
+                style = MaterialTheme.typography.displaySmall.copy(fontSize = 42.sp),
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                lineHeight = 46.sp
             )
-            Text(
-                text = "Username or Email",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-            TextField(
-                value = viewModel.username,
-                onValueChange = { newText: String ->
-                    viewModel.username = newText
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = stringResource(Res.string.textfield_placeholder),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 22.sp
-                    )
-                },
-                shape = MaterialTheme.shapes.medium
-            )
-            Text(
-                text = "Password",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            TextField(
-                value = viewModel.password,
-                onValueChange = { newText: String ->
-                    viewModel.password = newText
-                },
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 22.sp
-                ),
-                placeholder = {
-                    Text(
-                        text = stringResource(Res.string.textfield_placeholder),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 22.sp
-                    )
-                },
-                visualTransformation = if (passwordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
-                },
-                trailingIcon = {
-                    IconButton(onClick = {passwordVisible = !passwordVisible }) {
-                        Icon(
-                            painter = painterResource(
-                                if (passwordVisible) Res.drawable.visibility_24px
-                                else Res.drawable.visibility_off_24px
-                            ),
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                shape = MaterialTheme.shapes.medium
-            )
-            Button(
-                modifier = Modifier
-                    .width(120.dp)
-                    .height(60.dp),
-                onClick = { viewModel.loginButtonClicked() },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Text(
-                    text = "Login",
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-            Button(
-                modifier = Modifier
-                    .width(120.dp)
-                    .height(60.dp),
-                onClick =  onCreateAccount ,
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Text(
-                    text = "Create Account",
-                    style = MaterialTheme.typography.titleSmall,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
+            
+            Spacer(modifier = Modifier.height(40.dp))
 
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(
-                    top = 20.dp,
-                    end = 10.dp,
-                    start = 0.dp,
-                    bottom = 0.dp
-                )
-                .size(40.dp),
-            onClick =  onSkip ,
-            colors = IconButtonColors(
-                containerColor = MaterialTheme.colorScheme.onTertiary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContentColor = MaterialTheme.colorScheme.tertiary,
-                disabledContainerColor = MaterialTheme.colorScheme.onPrimary
-            ),
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.close_24px),
-                contentDescription = "Close"
-            )
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                color = Color.White,
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Sign In",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1B5E20),
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = viewModel.username,
+                        onValueChange = { viewModel.username = it },
+                        label = { Text("Username or Email", color = Color.Black) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        singleLine = true,
+                        textStyle = TextStyle(color = Color.Black),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedBorderColor = Color(0xFF1B5E20),
+                            unfocusedBorderColor = Color.Gray,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Black,
+                            cursorColor = Color.Black
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = viewModel.password,
+                        onValueChange = { viewModel.password = it },
+                        label = { Text("Password", color = Color.Black) },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(if (passwordVisible) Res.drawable.visibility_24px else Res.drawable.visibility_off_24px),
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        singleLine = true,
+                        textStyle = TextStyle(color = Color.Black),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedBorderColor = Color(0xFF1B5E20),
+                            unfocusedBorderColor = Color.Gray,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Black,
+                            cursorColor = Color.Black
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        onClick = { viewModel.loginButtonClicked() },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20))
+                    ) {
+                        Text("Login", fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        onClick = onCreateAccount,
+                        shape = MaterialTheme.shapes.medium,
+                        border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFF1B5E20))
+                    ) {
+                        Text("Create Account", color = Color(0xFF1B5E20), fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
         }
     }
 
@@ -203,23 +167,13 @@ fun LoginScreen (viewModel: LoginViewModel, onCreateAccount: () -> Unit, onSkip:
                 viewModel.showDialog = false
                 viewModel.dialogMessage = ""
             },
-            title = {Text(
-                text = "Important",
-                color = MaterialTheme.colorScheme.onSecondary
-            )},
-            text = {Text(
-                text = viewModel.dialogMessage,
-                color = MaterialTheme.colorScheme.onSecondary)},
+            title = { Text("Notice", color = Color.Black) },
+            text = { Text(viewModel.dialogMessage, color = Color.Black) },
             confirmButton = {
-                Button(
-                    onClick = { viewModel.showDialog = false }
-                ) {
-                    Text(
-                        text = "Dismiss",
-                        color = MaterialTheme.colorScheme.onSecondary)
+                TextButton(onClick = { viewModel.showDialog = false }) {
+                    Text("OK", color = Color(0xFF1B5E20), fontWeight = FontWeight.Bold)
                 }
-            },
+            }
         )
     }
 }
-
